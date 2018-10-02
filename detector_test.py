@@ -7,6 +7,8 @@ import sys
 import os
 import cv2
 import pickle
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 DARKNET_PATH = "/home/simenvg/environments/my_env/test2"
@@ -86,11 +88,79 @@ def write_detections_to_file(image_filepaths, thresh=0.5):
         DARKNET_PATH, 'YOLO_detections.txt'), 'wb'))
 
 
-write_detections_to_file(image_filepaths, thresh=0.05)
+# write_detections_to_file(image_filepaths, thresh=0.05)
+
+def get_intersected_area(box1, box2):
+    dx = min(box1.x_max, box2.x_max) - max(box1.x_min, box2.x_min)
+    dy = min(box1.y_max, box2.y_max) - max(box1.y_min, box2.y_min)
+    if dy <= 0 or dx <= 0:
+        return -1
+    else:
+        return dx * dy
 
 
-# YOLO_detections = pickle.load(
-#     open(os.path.join(DARKNET_PATH, 'YOLO_detections.txt'), "rb"))
+def get_iou(box1, box2):
+    area_box1 = (box1.x_max - box1.x_min) * (box1.y_max - box1.y_min)
+    area_box2 = (box2.x_max - box2.x_min) * (box2.y_max - box2.y_min)
+    intersected_area = get_intersected_area(box1, box2)
+    # print(intersected_area)
+    if intersected_area == -1:
+        return -1
+    else:
+        return intersected_area / (area_box1 + area_box2 - intersected_area)
+
+
+def valid_detection(detected_box, gt_box, iou_thresh=0.5):
+    return get_iou(detected_box, gt_box) >= iou_thresh
+
+
+YOLO_detections = pickle.load(
+    open(os.path.join(DARKNET_PATH, 'YOLO_detections.txt'), "rb"))
+
+
+def get_precision_recall(detections, iou_thresh, confidence_thresh=0.0):
+    true_positives = 0
+    num_detections = 0
+    num_gt_boxes = 0
+    for key, value in detections.iteritems():
+        gt_boxes = get_GT_boxes(os.path.join(
+            DARKNET_PATH, (key.strip()[:-4] + '.xml')))
+        num_detections += len(value)
+        for gt_box in gt_boxes:
+            for detected_box in value:
+                if detected_box.confidence >= confidence_thresh:
+                    if valid_detection(detected_box, gt_box, iou_thresh=iou_thresh):
+                        true_positives += 1
+                        value.remove(detected_box)
+                        break
+        num_gt_boxes += len(gt_boxes)
+    precision = float(true_positives) / float(num_detections)
+    recall = float(true_positives) / float(num_gt_boxes)
+    return (precision, recall)
+
+
+iou_threshs = [x * 0.01 for x in range(0, 100)]
+
+
+
+precisions = []
+recalls = []
+for iou_thresh in iou_threshs:
+    (precision, recall) = get_precision_recall(YOLO_detections, iou_thresh)
+    precisions.append(precision)
+    recalls.append(recall)
+
+print(precisions)
+print(recalls)
+
+
+plt.plot(recalls, precisions)
+plt.grid(True)
+plt.show()
+
+
+# get_precision_recall(YOLO_detections, 0.1)
+
 
 
 # print(YOLO_detections['data/obj/extra_kayak_axis0000.jpg'][0].confidence)
