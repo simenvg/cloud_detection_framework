@@ -2,6 +2,7 @@ import argparse
 import os
 import convert_to_yolo_format
 import shutil
+import subprocess
 
 
 parser = argparse.ArgumentParser(description='Input path to darknet')
@@ -49,7 +50,8 @@ def setup_tmp_folder():
 
 def generate_yolo_train_files():
     training_dataset_paths = set_training_datasets()
-    [tmp_folder_path, tmp_folder_train_path, tmp_folder_test_path] = setup_tmp_folder()
+    [tmp_folder_path, tmp_folder_train_path,
+        tmp_folder_test_path] = setup_tmp_folder()
     train_txt = open(os.path.join(tmp_folder_path, 'train.txt'), 'w')
     test_txt = open(os.path.join(tmp_folder_path, 'test.txt'), 'w')
     for training_dataset in training_dataset_paths:
@@ -59,14 +61,16 @@ def generate_yolo_train_files():
             shutil.copy2(os.path.join(training_dataset, 'train',
                                       filename[:-4] + '.xml'), tmp_folder_train_path)
             if filename.endswith('.jpg'):
-                train_txt.write(os.path.join(tmp_folder_train_path, filename) + '\n')
+                train_txt.write(os.path.join(
+                    tmp_folder_train_path, filename) + '\n')
         for filename in os.listdir(os.path.join(training_dataset, 'test')):
             shutil.copy2(
                 os.path.join(training_dataset, 'test', filename), tmp_folder_test_path)
             shutil.copy2(os.path.join(training_dataset, 'test',
                                       filename[:-4] + '.xml'), tmp_folder_test_path)
             if filename.endswith('.jpg'):
-                test_txt.write(os.path.join(tmp_folder_test_path, filename) + '\n')
+                test_txt.write(os.path.join(
+                    tmp_folder_test_path, filename) + '\n')
     test_txt.close()
     train_txt.close()
     classes = convert_to_yolo_format.get_classes(
@@ -76,13 +80,63 @@ def generate_yolo_train_files():
     convert_to_yolo_format.generate_yolo_annotation_files(
         tmp_folder_test_path, classes)
     convert_to_yolo_format.generate_classes_file(tmp_folder_path, classes)
-    # CFG
-    # OBJ.Names obj.data in darknet/data
-    # Set Batch and subdivisions in CFG
-    # Set classes in CFG, line 620, 696, 783
-    # set Filters (classes + 5) * 3 in CFG, line 602, 689, 776
-    # weights saved every 1000 iteration
+
+    return len(classes)
+
+
+def update_cfg_file(num_classes):
+    num_filters = (num_classes + 5) * 3
+    cfg_file = open(os.path.join(
+        DARKNET_PATH, 'cfg', 'yolov3.cfg'), 'r')
+    lines = cfg_file.readlines()
+    cfg_file.close()
+    class_lines = [609, 695, 782]
+    filter_lines = [602, 688, 775]
+    for class_line in class_lines:
+        lines[class_line] = 'classes=' + str(num_classes) + '\n'
+    for filter_line in filter_lines:
+        lines[filter_line] = 'filters=' + str(num_filters) + '\n'
+    new_cfg_file = open(os.path.join(
+        DARKNET_PATH, 'cfg', 'yolo-obj_test.cfg'), 'w')
+    for line in lines:
+        new_cfg_file.write(line)
+    new_cfg_file.close()
+
+
+def update_weights_saved_interval():
+    detector_c = open(os.path.join(
+        DARKNET_PATH, 'examples', 'detector.c'), 'r')
+    lines = detector_c.readlines()
+    detector_c.close()
+    lines[137] = '        if(i%1000==0 || (i < 1000 && i%100 == 0)){ \n'
+    new_detector_c = open(os.path.join(
+        DARKNET_PATH, 'examples', 'detector.c'), 'w')
+    for line in lines:
+        new_detector_c.write(line)
+    new_detector_c.close()
+
+
+def generate_obj_data(num_classes):
+    line1 = 'classes = ' + str(num_classes) + '\n'
+    line2 = 'train = ' + os.path.join(DATA_PATH, 'tmp', 'train_txt') + '\n'
+    line3 = 'valid = ' + os.path.join(DATA_PATH, 'tmp', 'test_txt') + '\n'
+    line4 = 'names = ' + os.path.join(DATA_PATH, 'tmp', 'classes.names') + '\n'
+    line5 = 'backup = backup/'
+    lines = [line1, line2, line3, line4, line5]
+    obj_data_file = open(os.path.join(DARKNET_PATH, 'data', 'obj.data'))
+    for line in lines:
+        obj_data_file.write(line)
+    obj_data_file.close()
+
+
+def train_yolo():
+    subprocess.call(['./' + DARKNET_PATH + '/darknet', 'detector', 'train',
+                     'data/obj.data', 'cfg/yolo-obj_test.cfg', 'darknet53.conv.74'])
 
 
 if __name__ == '__main__':
-    generate_yolo_train_files()
+    num_classes = generate_yolo_train_files()
+    update_cfg_file(num_classes)
+    update_weights_saved_interval()
+    generate_obj_data()
+    train_yolo()
