@@ -4,11 +4,15 @@ import sys
 import random
 
 
-if len(sys.argv) <= 1:
-    print("Argument = Complete path to image folder")
-    sys.exit()
+# This script can be run on a dataset annotated with VOC Pascal format.
+# It creates a 50/50 test and train set, and creates YOLO annotation files
 
-path = sys.argv[1]
+
+# if len(sys.argv) <= 1:
+#     print("Argument = Complete path to image folder")
+#     sys.exit()
+
+# path = sys.argv[1]
 
 
 def get_classes(path):
@@ -27,7 +31,7 @@ def get_classes(path):
     return classes
 
 
-def convert(size, box):
+def convert_voc_to_yolo(size, box):
     dw = 1. / (size[0])
     dh = 1. / (size[1])
     x = (box[0] + box[1]) / 2.0 - 1
@@ -41,7 +45,7 @@ def convert(size, box):
     return (x, y, w, h)
 
 
-def convert_annotation(filename, classes):
+def convert_annotation(filename, classes, path):
     xml_annotation_file = filename[:-4] + '.xml'
     txt_annotation_file = filename[:-4] + '.txt'
     in_file = open(os.path.join(path, xml_annotation_file), 'r')
@@ -60,22 +64,42 @@ def convert_annotation(filename, classes):
         xmlbox = obj.find('bndbox')
         b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(
             xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
-        bb = convert((w, h), b)
+        bb = convert_voc_to_yolo((w, h), b)
         out_file.write(str(cls_id) + " " +
                        " ".join([str(a) for a in bb]) + '\n')
 
 
+def change_folder(current_path, new_path, filename):
+    if not os.path.exists(new_path):
+        os.makedirs(new_path)
+    os.rename(os.path.join(current_path, filename),
+              os.path.join(new_path, filename))
+
+
 def generate_yolo_files(path):
     classes = get_classes(path)
-    train_file = open('train.txt', 'w')
-    test_file = open('test.txt', 'w')
+    class_file = open(os.path.join(path, 'classes.names'), 'w')
+    for cls in classes:
+        if cls == classes[-1]:
+            class_file.write(cls)
+        else:
+            class_file.write(cls + '\n')
+    train_file = open(os.path.join(path, 'train.txt'), 'w')
+    test_file = open(os.path.join(path, 'test.txt'), 'w')
     for filename in os.listdir(path):
         if filename.endswith(".jpg"):
+            convert_annotation(filename, classes, path)
             if random.random() >= 0.50:
-                train_file.write(os.path.join(path, filename) + '\n')
+                train_file.write(os.path.join(path, 'train', filename) + '\n')
+                change_folder(path, os.path.join(path, 'train'), filename)
+                change_folder(path, os.path.join(path, 'train'), filename[:-4] + '.xml')
+                change_folder(path, os.path.join(path, 'train'), filename[:-4] + '.txt')
             else:
-                test_file.write(os.path.join(path, filename) + '\n')
-            convert_annotation(filename, classes)
+                test_file.write(os.path.join(path, 'test', filename) + '\n')
+                change_folder(path, os.path.join(path, 'test'), filename)
+                change_folder(path, os.path.join(path, 'test'), filename[:-4] + '.xml')
+                change_folder(path, os.path.join(path, 'test'), filename[:-4] + '.txt')
+
         else:
             continue
     train_file.close()

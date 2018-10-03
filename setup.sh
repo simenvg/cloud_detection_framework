@@ -36,3 +36,4 @@ sed -i 's/GPU=.*/GPU=1/' Makefile
 sed -i 's/CUDNN=.*/CUDNN=1/' Makefile
 make
 cd ..
+cd mkdir data
