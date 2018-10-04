@@ -118,25 +118,25 @@ def update_weights_saved_interval():
 
 def generate_obj_data(num_classes):
     line1 = 'classes = ' + str(num_classes) + '\n'
-    line2 = 'train = ' + os.path.join(DATA_PATH, 'tmp', 'train_txt') + '\n'
-    line3 = 'valid = ' + os.path.join(DATA_PATH, 'tmp', 'test_txt') + '\n'
+    line2 = 'train = ' + os.path.join(DATA_PATH, 'tmp', 'train.txt') + '\n'
+    line3 = 'valid = ' + os.path.join(DATA_PATH, 'tmp', 'test.txt') + '\n'
     line4 = 'names = ' + os.path.join(DATA_PATH, 'tmp', 'classes.names') + '\n'
     line5 = 'backup = backup/'
     lines = [line1, line2, line3, line4, line5]
-    obj_data_file = open(os.path.join(DARKNET_PATH, 'data', 'obj.data'))
+    obj_data_file = open(os.path.join(DARKNET_PATH, 'data', 'obj.data'), 'w')
     for line in lines:
         obj_data_file.write(line)
     obj_data_file.close()
 
 
 def train_yolo():
-    subprocess.call(['./' + DARKNET_PATH + '/darknet', 'detector', 'train',
-                     'data/obj.data', 'cfg/yolo-obj_test.cfg', 'darknet53.conv.74'])
+    subprocess.call(['/' + DARKNET_PATH + '/darknet', 'detector', 'train',
+                     DARKNET_PATH + '/data/obj.data', DARKNET_PATH + '/cfg/yolo-obj_test.cfg', DARKNET_PATH + '/darknet53.conv.74'])
 
 
 if __name__ == '__main__':
     num_classes = generate_yolo_train_files()
     update_cfg_file(num_classes)
     update_weights_saved_interval()
-    generate_obj_data()
+    generate_obj_data(num_classes)
     train_yolo()
