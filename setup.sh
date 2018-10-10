@@ -8,6 +8,9 @@ sudo apt-get install git
 sudo apt-get install gcc
 sudo apt-get install make
 
+export LC_ALL=en_US.UTF-8
+echo  'export LC_ALL=en_US.UTF-8' >> ~/.bashrc 
+
 
 # CUDA
 curl -O http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.0.176-1_amd64.deb
@@ -39,3 +42,4 @@ sed -i 's/CUDNN=.*/CUDNN=1/' Makefile
 make
 cd ..
 mkdir data
+
