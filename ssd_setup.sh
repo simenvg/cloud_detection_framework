@@ -45,9 +45,10 @@ sed -i -e 's/LIBRARY_DIRS := $(PYTHON_LIB) \/usr\/local\/lib \/usr\/lib/LIBRARY_
 
 
 # Adjust Makefile.config (for example, if using Anaconda Python)
-# make all -j8
-# make test -j8
-# make runtest
+make all -j4
+make test -j4
+export LC_ALL=en_US.UTF-8
+make runtest
 #
 # make all matcaffe
 # make mattest
