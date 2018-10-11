@@ -1,1 +1,4 @@
 
+[submodule "SSD.TensorFlow"]
+	path = SSD.TensorFlow
+	url = https://github.com/simenvg/SSD.TensorFlow
