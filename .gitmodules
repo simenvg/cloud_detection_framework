@@ -1,0 +1,3 @@
+[submodule "SSD.TensorFlow"]
+	path = SSD.TensorFlow
+	url = https://github.com/HiKapok/SSD.TensorFlow
