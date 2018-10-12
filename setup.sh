@@ -51,3 +51,14 @@ source ./venv/bin/activate  # sh, bash, ksh, or zsh
 pip install --upgrade pip
 pip install --upgrade tensorflow-gpu
 deactivate
+
+# Download VGG16 for SSD
+sudo apt-get install -y unzip
+cd cloud-detection-framework
+cd SSD.TensorFlow
+mkdir model
+cd model
+wget https://www.dropbox.com/s/2hetsd93o93dx8u/VGG16.zip?dl=0
+mv VGG16.zip?dl=0 VGG16.zip
+unzip VGG16.zip
+cd ~
