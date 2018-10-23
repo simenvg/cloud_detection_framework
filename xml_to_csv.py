@@ -49,10 +49,10 @@ def setup_tmp_folder(data_path):
     return [tmp_folder_path, tmp_folder_train_path, tmp_folder_test_path]
 
 
-def setup_train_data():
-    datasets = set_training_datasets()
+def setup_train_data(data_path):
+    datasets = set_training_datasets(data_path)
     [tmp_folder_path, tmp_folder_train_path,
-        tmp_folder_test_path] = setup_tmp_folder()
+        tmp_folder_test_path] = setup_tmp_folder(data_path)
     for dataset in datasets:
         for filename in os.listdir(os.path.join(dataset, 'train')):
             if filename.endswith('.jpg'):
@@ -120,7 +120,7 @@ def xml_to_csv(path):
 
 
 def main():
-    classes = setup_train_data()
+    classes = setup_train_data(DATA_PATH)
     generate_classes_file(os.path.join(DATA_PATH, 'tmp'), classes)
     folders = ['train', 'test']
     for folder in folders:

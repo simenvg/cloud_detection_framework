@@ -50,6 +50,7 @@ virtualenv --system-site-packages -p python3 ./venv
 source ./venv/bin/activate  # sh, bash, ksh, or zsh
 pip install --upgrade pip
 pip install --upgrade tensorflow-gpu
+pip install pandas
 deactivate
 
 # Download VGG16 for SSD
