@@ -132,7 +132,7 @@ def main():
         # image_path = os.path.join(os.getcwd(), 'annotations')
         xml_df = xml_to_csv(os.path.join(
             DATA_PATH, 'tmp', folder, 'Annotations'))
-        xml_df.to_csv(folder + '.csv', index=None)
+        xml_df.to_csv(os.path.join(DATA_PATH, 'tmp', folder + '.csv'), index=None)
     print('Successfully converted xml to csv.')
 
 
