@@ -103,14 +103,19 @@ def xml_to_csv(path):
         tree = ET.parse(xml_file)
         root = tree.getroot()
         for member in root.findall('object'):
+            xmlbox = member.find('bndbox')
+            xmin = int(xmlbox.find('xmin').text)
+            xmax = int(xmlbox.find('xmax').text)
+            ymin = int(xmlbox.find('ymin').text)
+            ymax = int(xmlbox.find('ymax').text)
             value = (root.find('filename').text,
                      int(root.find('size')[0].text),
                      int(root.find('size')[1].text),
                      member[0].text,
-                     int(member[4][0].text),
-                     int(member[4][1].text),
-                     int(member[4][2].text),
-                     int(member[4][3].text)
+                     xmin,
+                     ymin,
+                     xmax,
+                     ymax
                      )
             xml_list.append(value)
     column_name = ['filename', 'width', 'height',
@@ -125,7 +130,8 @@ def main():
     folders = ['train', 'test']
     for folder in folders:
         # image_path = os.path.join(os.getcwd(), 'annotations')
-        xml_df = xml_to_csv(os.path.join(DATA_PATH, 'tmp', folder, 'Annotations'))
+        xml_df = xml_to_csv(os.path.join(
+            DATA_PATH, 'tmp', folder, 'Annotations'))
         xml_df.to_csv(folder + '.csv', index=None)
     print('Successfully converted xml to csv.')
 
