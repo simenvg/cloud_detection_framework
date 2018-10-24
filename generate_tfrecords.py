@@ -85,17 +85,16 @@ def create_tf_example(group, path, class_map):
 def main(_):
     folders = ['train', 'test']
     class_map = get_class_dict(os.path.join(FLAGS.data_path, 'tmp', 'classes.txt'))
-    writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.data_path, 'tmp'))
     for folder in folders:
-        image_path = os.path.join(FLAGS.data_path, folder, 'JPEGImages')
+        writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.data_path, 'tmp', folder + '.record')) 
+        image_path = os.path.join(FLAGS.data_path, 'tmp', folder, 'JPEGImages')
         examples = pd.read_csv(os.path.join(
             FLAGS.data_path, 'tmp', folder + '.csv'))
         grouped = split(examples, 'filename')
         for group in grouped:
             tf_example = create_tf_example(group, image_path, class_map)
             writer.write(tf_example.SerializeToString())
-
-    writer.close()
+        writer.close()
     output_path = os.path.join(FLAGS.data_path, 'tmp')
     print('Successfully created the TFRecords: {}'.format(output_path))
 
