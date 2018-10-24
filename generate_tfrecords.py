@@ -31,7 +31,7 @@ def get_class_dict(classes_path):
     lines = class_file.readlines()
     classes = {}
     for i in range(0, len(lines)):
-        classes[lines[i]] = i + 1
+        classes[lines[i].strip()] = i + 1
     return classes
 
 
@@ -63,7 +63,7 @@ def create_tf_example(group, path, class_map):
         ymins.append(row['ymin'] / height)
         ymaxs.append(row['ymax'] / height)
         classes_text.append(row['class'].encode('utf8'))
-        classes.append(class_map(row['class']))
+        classes.append(class_map[row['class']])
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
