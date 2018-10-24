@@ -95,7 +95,7 @@ def generate_classes_file(path, classes):
             class_file_txt.write(classes[i])
         else:
             class_file_txt.write(classes[i] + '\n')
-        class_file_pbtxt.write('item { \n  id: ', str(i + 1), '\n  name: \'', classes[i], '\' \n } \n \n')
+        class_file_pbtxt.write('item { \n  id: ' + str(i + 1) + '\n  name: \'' + classes[i] + '\' \n } \n \n')
     class_file_txt.close()
 
 
