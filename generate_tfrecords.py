@@ -26,11 +26,13 @@ FLAGS = flags.FLAGS
 
 
 # TO-DO replace this with label map
-def class_text_to_int(row_label):
-    if row_label == 'raccoon':
-        return 1
-    else:
-        None
+def get_class_dict(classes_path):
+    class_file = open(classes_path, 'r')
+    lines = class_file.readlines()
+    classes = {}
+    for i in range(0, len(lines)):
+        classes[lines[i]] = i + 1
+    return classes
 
 
 def split(df, group):
@@ -39,7 +41,7 @@ def split(df, group):
     return [data(filename, gb.get_group(x)) for filename, x in zip(gb.groups.keys(), gb.groups)]
 
 
-def create_tf_example(group, path):
+def create_tf_example(group, path, class_map):
     with tf.gfile.GFile(os.path.join(path, '{}'.format(group.filename)), 'rb') as fid:
         encoded_jpg = fid.read()
     encoded_jpg_io = io.BytesIO(encoded_jpg)
@@ -61,7 +63,7 @@ def create_tf_example(group, path):
         ymins.append(row['ymin'] / height)
         ymaxs.append(row['ymax'] / height)
         classes_text.append(row['class'].encode('utf8'))
-        classes.append(class_text_to_int(row['class']))
+        classes.append(class_map(row['class']))
 
     tf_example = tf.train.Example(features=tf.train.Features(feature={
         'image/height': dataset_util.int64_feature(height),
@@ -82,6 +84,7 @@ def create_tf_example(group, path):
 
 def main(_):
     folders = ['train', 'test']
+    class_map = get_class_dict(os.path.join(FLAGS.data_path, 'tmp', 'classes.txt'))
     writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.data_path, 'tmp'))
     for folder in folders:
         image_path = os.path.join(FLAGS.data_path, folder, 'JPEGImages')
@@ -89,7 +92,7 @@ def main(_):
             FLAGS.data_path, 'tmp', folder + '.csv'))
         grouped = split(examples, 'filename')
         for group in grouped:
-            tf_example = create_tf_example(group, image_path)
+            tf_example = create_tf_example(group, image_path, class_map)
             writer.write(tf_example.SerializeToString())
 
     writer.close()
