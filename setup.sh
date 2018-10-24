@@ -7,6 +7,7 @@ sudo apt-get -y upgrade
 sudo apt-get -y install git
 sudo apt-get -y install gcc
 sudo apt-get -y install make
+sudo apt-get -y install unzip
 
 export LC_ALL=en_US.UTF-8
 echo  'export LC_ALL=en_US.UTF-8' >> ~/.bashrc 
@@ -40,8 +41,6 @@ cd darknet
 sed -i 's/GPU=.*/GPU=1/' Makefile
 sed -i 's/CUDNN=.*/CUDNN=1/' Makefile
 make
-cd ..
-mkdir data
 
 # Tensorflow
 sudo apt install python3-dev python3-pip
@@ -51,15 +50,7 @@ source ./venv/bin/activate  # sh, bash, ksh, or zsh
 pip install --upgrade pip
 pip install --upgrade tensorflow-gpu
 pip install pandas
+pip install lxml
 deactivate
 
-# Download VGG16 for SSD
-sudo apt-get install -y unzip
-cd cloud-detection-framework
-cd SSD.TensorFlow
-mkdir model
-cd model
-wget https://www.dropbox.com/s/2hetsd93o93dx8u/VGG16.zip?dl=0
-mv VGG16.zip?dl=0 VGG16.zip
-unzip VGG16.zip
-cd ~
+

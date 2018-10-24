@@ -15,7 +15,7 @@ DATA_PATH = args.DATA_PATH[0]
 
 def set_training_datasets(data_path):
     try:
-        datasets = os.listdir(data_path)
+        datasets = os.listdir(os.path.join(data_path, 'datasets'))
     except Exception as e:
         print('No folder named ~/data')
         print('Exception: ', e)
@@ -29,7 +29,7 @@ def set_training_datasets(data_path):
     training_dataset_paths = []
     for dataset_index in user_input:
         training_dataset_paths.append(
-            os.path.join(data_path, datasets[int(dataset_index)]))
+            os.path.join(data_path, 'datasets', datasets[int(dataset_index)]))
     return training_dataset_paths
 
 
