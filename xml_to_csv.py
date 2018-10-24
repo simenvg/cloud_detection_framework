@@ -72,7 +72,7 @@ def setup_train_data(data_path):
 
 
 def get_classes(paths):
-    classes = ['none']
+    classes = []
     for path in paths:
         for filename in os.listdir(path):
             if filename.endswith(".xml"):
@@ -88,13 +88,15 @@ def get_classes(paths):
 
 
 def generate_classes_file(path, classes):
-    class_file = open(os.path.join(path, 'classes.txt'), 'w')
-    for clas in classes:
-        if clas == classes[-1]:
-            class_file.write(clas)
+    class_file_txt = open(os.path.join(path, 'classes.txt'), 'w')
+    class_file_pbtxt = open(os.path.join(path, 'label_map.pbtxt'), 'w')
+    for i in range(0, len(classes)):
+        if classes[i] == classes[-1]:
+            class_file_txt.write(classes[i])
         else:
-            class_file.write(clas + '\n')
-    class_file.close()
+            class_file_txt.write(classes[i] + '\n')
+        class_file_pbtxt.write('item { \n  id: ', str(i + 1), '\n  name: \'', classes[i], '\' \n } \n \n')
+    class_file_txt.close()
 
 
 def xml_to_csv(path):
@@ -136,4 +138,5 @@ def main():
     print('Successfully converted xml to csv.')
 
 
-main()
+if __name__ == '__main__':
+    main()
