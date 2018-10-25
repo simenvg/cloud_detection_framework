@@ -42,6 +42,13 @@ sed -i 's/GPU=.*/GPU=1/' Makefile
 sed -i 's/CUDNN=.*/CUDNN=1/' Makefile
 make
 
+# Protoc
+cd ~
+curl -OL https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
+unzip protoc-3.4.0-linux-x86_64.zip -d protoc3
+sudo mv protoc3/bin/* /usr/local/bin/
+sudo mv protoc3/include/* /usr/local/include/
+
 # Tensorflow
 cd ~
 sudo apt install python3-dev python3-pip
@@ -52,19 +59,24 @@ pip install --upgrade pip
 pip install --upgrade tensorflow-gpu
 pip install pandas
 pip install lxml
-deactivate
+pip install pycocotools
+pip install pillow
 
-# Protoc
-cd ~
-curl -OL https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
-unzip protoc-3.4.0-linux-x86_64.zip -d protoc3
-sudo mv protoc3/bin/* /usr/local/bin/
-sudo mv protoc3/include/* /usr/local/include/
-
-
-# Tensorflow models
+# Tensorflow object detection API
 cd ~
 git clone https://github.com/tensorflow/models.git 
+cd models/research
+python3 setup.py build
+python3 setup.py install
+
+deactivate
+
+
+
+
+
+
+
 
 
 
