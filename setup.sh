@@ -43,6 +43,7 @@ sed -i 's/CUDNN=.*/CUDNN=1/' Makefile
 make
 
 # Tensorflow
+cd ~
 sudo apt install python3-dev python3-pip
 sudo pip3 install -U virtualenv  # system-wide install
 virtualenv --system-site-packages -p python3 ./venv
@@ -52,5 +53,22 @@ pip install --upgrade tensorflow-gpu
 pip install pandas
 pip install lxml
 deactivate
+
+# Protoc
+cd ~
+curl -OL https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
+unzip protoc-3.4.0-linux-x86_64.zip -d protoc3
+sudo mv protoc3/bin/* /usr/local/bin/
+sudo mv protoc3/include/* /usr/local/include/
+
+
+# Tensorflow models
+cd ~
+git clone https://github.com/tensorflow/models.git 
+
+
+
+
+
 
 
