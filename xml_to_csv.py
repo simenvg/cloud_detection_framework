@@ -95,7 +95,8 @@ def generate_classes_file(path, classes):
             class_file_txt.write(classes[i])
         else:
             class_file_txt.write(classes[i] + '\n')
-        class_file_pbtxt.write('item { \n  id: ' + str(i + 1) + '\n  name: \'' + classes[i] + '\' \n } \n \n')
+        class_file_pbtxt.write(
+            'item { \n  id: ' + str(i + 1) + '\n  name: \'' + classes[i] + '\' \n } \n \n')
     class_file_txt.close()
 
 
@@ -110,7 +111,8 @@ def xml_to_csv(path):
             xmax = int(xmlbox.find('xmax').text)
             ymin = int(xmlbox.find('ymin').text)
             ymax = int(xmlbox.find('ymax').text)
-            value = (root.find('filename').text,
+            path_stripped = os.path.join(*path.split('/')[1:-1])
+            value = (os.path.join(path_stripped, 'JPEGImages', root.find('filename').text),
                      int(root.find('size')[0].text),
                      int(root.find('size')[1].text),
                      member[0].text,
@@ -134,7 +136,8 @@ def main():
         # image_path = os.path.join(os.getcwd(), 'annotations')
         xml_df = xml_to_csv(os.path.join(
             DATA_PATH, 'tmp', folder, 'Annotations'))
-        xml_df.to_csv(os.path.join(DATA_PATH, 'tmp', folder + '.csv'), index=None)
+        xml_df.to_csv(os.path.join(DATA_PATH, 'tmp',
+                                   folder + '.csv'), index=None)
     print('Successfully converted xml to csv.')
 
 

@@ -66,8 +66,8 @@ pip install pillow
 cd ~
 git clone https://github.com/tensorflow/models.git 
 cd models/research
-python3 setup.py build
-python3 setup.py install
+python setup.py build
+python setup.py install
 
 deactivate
 
