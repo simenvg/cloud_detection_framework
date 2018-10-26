@@ -19,7 +19,7 @@ def edit_config_file(data_path):
     lines = config_file.readlines()
     num_classes = get_num_classes(
         os.path.join(data_path, 'tmp', 'classes.txt'))
-    lines[8] = '    num_classes: ' + num_classes + '\n'
+    lines[8] = '    num_classes: ' + str(num_classes) + '\n'
     lines[155] = '  fine_tune_checkpoint: "' + data_path + \
         '/SSD_mobilenet/models/model/ssd_mobilenet_v1_coco_2018_01_28/model.ckpt"\n'
     lines[174] = '    input_path: "' + data_path + \
