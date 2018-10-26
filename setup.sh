@@ -59,7 +59,6 @@ pip install --upgrade pip
 pip install --upgrade tensorflow-gpu
 pip install pandas
 pip install lxml
-pip install pycocotools
 pip install pillow
 
 # Tensorflow object detection API
@@ -69,6 +68,9 @@ cd models/research
 python setup.py build
 python setup.py install
 sed -i -e 's/          eval_config, category_index.values(), eval_dict)/          eval_config, list(category_index.values()), eval_dict)/g' ./object_detection/model_lib.py
+pip install pycocotools
+echo 'export PYTHONPATH=$PYTHONPATH:~/models/research:~/models/research/slim' >> ~/.bashrc 
+echo  'protoc ~/models/research/object_detection/protos/*.proto --python_out=~/models/research' >> ~/.bashrc 
 
 deactivate
 
