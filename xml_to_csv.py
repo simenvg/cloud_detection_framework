@@ -88,8 +88,8 @@ def get_classes(paths):
 
 
 def generate_classes_file(path, classes):
-    class_file_txt = open(os.path.join(path, 'classes.txt'), 'w')
-    class_file_pbtxt = open(os.path.join(path, 'label_map.pbtxt'), 'w')
+    class_file_txt = open(os.path.join(path, 'tmp', 'classes.txt'), 'w')
+    class_file_pbtxt = open(os.path.join(path, 'SSD_mobilenet', 'data', 'label_map.pbtxt'), 'w')
     for i in range(0, len(classes)):
         if classes[i] == classes[-1]:
             class_file_txt.write(classes[i])
@@ -128,7 +128,7 @@ def xml_to_csv(path):
 
 def main():
     classes = setup_train_data(DATA_PATH)
-    generate_classes_file(os.path.join(DATA_PATH, 'tmp'), classes)
+    generate_classes_file(DATA_PATH, classes)
     folders = ['train', 'test']
     for folder in folders:
         # image_path = os.path.join(os.getcwd(), 'annotations')

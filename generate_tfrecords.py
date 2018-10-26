@@ -100,7 +100,7 @@ def main(_):
     class_map = get_class_dict(os.path.join(
         FLAGS.data_path, 'tmp', 'classes.txt'))
     for folder in folders:
-        writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.data_path, 'tmp', folder + '.record'))
+        writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.data_path, 'SSD_mobilenet', 'data', folder + '.record'))
         image_path = os.path.join(FLAGS.data_path, 'tmp', folder, 'JPEGImages')
         examples = pd.read_csv(os.path.join(
             FLAGS.data_path, 'tmp', folder + '.csv'))
