@@ -1,4 +1,4 @@
-import subprocesses
+import subprocess
 import os
 import argparse
 
@@ -43,14 +43,14 @@ def get_num_classes(class_file_path):
 
 
 def start_training(data_path):
-    pipiline_config_path = os.path.join(data_path, 'SSD_mobilenet',
+    pipeline_config_path = os.path.join(data_path, 'SSD_mobilenet',
                                         'models', 'model', 'ssd_mobilenet_v1_coco_edited.config')
-    subprocesses.call(['python', '~/models/research/object_detection/model_main.py',
-                       'pipeline_config_path=' + pipiline_config_path,
-                       '--model_dir=' + data_path + '/models/model',
-                       '--num_train_steps=50000',
-                       '--sample_1_of_n_eval_examples=1',
-                       '--alsologtostderr'])
+    subprocess.call(['python', '~/models/research/object_detection/model_main.py',
+                     'pipeline_config_path=' + pipeline_config_path,
+                     '--model_dir=' + data_path + '/models/model',
+                     '--num_train_steps=50000',
+                     '--sample_1_of_n_eval_examples=1',
+                     '--alsologtostderr'])
 
 
 def main(data_path):
