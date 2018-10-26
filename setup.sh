@@ -68,8 +68,26 @@ git clone https://github.com/tensorflow/models.git
 cd models/research
 python setup.py build
 python setup.py install
+sed -i -e 's/          eval_config, category_index.values(), eval_dict)/          eval_config, list(category_index.values()), eval_dict)/g' ./object_detection/model_lib.py
 
 deactivate
+
+
+# Setup data folder
+cd ~
+mkdir data
+cd data
+mkdir datasets
+mkdir SSD_mobilenet
+cd SSD_mobilenet
+mkdir data
+mkdir models
+cd models
+mkdir model
+cd model
+wget https://raw.githubusercontent.com/tensorflow/models/master/research/object_detection/samples/configs/ssd_mobilenet_v1_coco.config
+wget http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_2018_01_28.tar.gz
+tar xzvf ssd_mobilenet_v1_coco_2018_01_28.tar.gz
 
 
 
