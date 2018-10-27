@@ -69,7 +69,7 @@ cd models/research
 python setup.py build
 python setup.py install
 sed -i -e 's/          eval_config, category_index.values(), eval_dict)/          eval_config, list(category_index.values()), eval_dict)/g' ./object_detection/model_lib.py
-sed -i '27itf.logging.set_verbosity(tf.logging.INFO)'
+sed -i '27itf.logging.set_verbosity(tf.logging.INFO)' ./object_detection/model_main.py
 pip install pycocotools
 echo 'export PYTHONPATH=$PYTHONPATH:~/models/research:~/models/research/slim' >> ~/.bashrc 
 echo  'protoc ~/models/research/object_detection/protos/*.proto --python_out=~/models/research' >> ~/.bashrc 
