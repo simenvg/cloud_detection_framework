@@ -46,7 +46,7 @@ def start_training(data_path):
     pipeline_config_path = os.path.join(data_path, 'SSD_mobilenet',
                                         'models', 'model', 'ssd_mobilenet_v1_coco_edited.config')
     subprocess.call(['python', data_path + '/models/research/object_detection/model_main.py',
-                     'pipeline_config_path=' + pipeline_config_path,
+                     '--pipeline_config_path=' + pipeline_config_path,
                      '--model_dir=' + data_path + '/models/model',
                      '--num_train_steps=50000',
                      '--sample_1_of_n_eval_examples=1',
