@@ -1,8 +1,8 @@
 import subprocess
 import os
 import argparse
-import xml_to_csv.py
-import generate_tfrecords.py
+import xml_to_csv
+import generate_tfrecords
 
 
 def edit_config_file(data_path):

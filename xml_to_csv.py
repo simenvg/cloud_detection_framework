@@ -128,7 +128,7 @@ def main(data_path):
     for folder in folders:
         # image_path = os.path.join(os.getcwd(), 'annotations')
         xml_df = xml_to_csv(os.path.join(
-            DATA_PATH, 'tmp', folder, 'Annotations'))
+            data_path, 'tmp', folder, 'Annotations'))
         xml_df.to_csv(os.path.join(data_path, 'tmp',
                                    folder + '.csv'), index=None)
     print('Successfully converted xml to csv.')
