@@ -126,17 +126,17 @@ def xml_to_csv(path):
     return xml_df
 
 
-def main():
-    classes = setup_train_data(DATA_PATH)
-    generate_classes_file(DATA_PATH, classes)
+def main(data_path):
+    classes = setup_train_data(data_path)
+    generate_classes_file(data_path, classes)
     folders = ['train', 'test']
     for folder in folders:
         # image_path = os.path.join(os.getcwd(), 'annotations')
         xml_df = xml_to_csv(os.path.join(
             DATA_PATH, 'tmp', folder, 'Annotations'))
-        xml_df.to_csv(os.path.join(DATA_PATH, 'tmp', folder + '.csv'), index=None)
+        xml_df.to_csv(os.path.join(data_path, 'tmp', folder + '.csv'), index=None)
     print('Successfully converted xml to csv.')
 
 
 if __name__ == '__main__':
-    main()
+    main(DATA_PATH)
