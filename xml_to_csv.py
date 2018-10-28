@@ -5,13 +5,6 @@ import xml.etree.ElementTree as ET
 import shutil
 import argparse
 
-parser = argparse.ArgumentParser(description='Input path to darknet')
-parser.add_argument('DATA_PATH', type=str, nargs=1,
-                    help='Set path to data folder, containg datasets')
-
-args = parser.parse_args()
-DATA_PATH = args.DATA_PATH[0]
-
 
 def set_training_datasets(data_path):
     try:
@@ -89,13 +82,15 @@ def get_classes(paths):
 
 def generate_classes_file(path, classes):
     class_file_txt = open(os.path.join(path, 'tmp', 'classes.txt'), 'w')
-    class_file_pbtxt = open(os.path.join(path, 'SSD_mobilenet', 'data', 'label_map.pbtxt'), 'w')
+    class_file_pbtxt = open(os.path.join(
+        path, 'SSD_mobilenet', 'data', 'label_map.pbtxt'), 'w')
     for i in range(0, len(classes)):
         if classes[i] == classes[-1]:
             class_file_txt.write(classes[i])
         else:
             class_file_txt.write(classes[i] + '\n')
-        class_file_pbtxt.write('item { \n  id: ' + str(i + 1) + '\n  name: \'' + classes[i] + '\' \n } \n \n')
+        class_file_pbtxt.write(
+            'item { \n  id: ' + str(i + 1) + '\n  name: \'' + classes[i] + '\' \n } \n \n')
     class_file_txt.close()
 
 
@@ -134,9 +129,15 @@ def main(data_path):
         # image_path = os.path.join(os.getcwd(), 'annotations')
         xml_df = xml_to_csv(os.path.join(
             DATA_PATH, 'tmp', folder, 'Annotations'))
-        xml_df.to_csv(os.path.join(data_path, 'tmp', folder + '.csv'), index=None)
+        xml_df.to_csv(os.path.join(data_path, 'tmp',
+                                   folder + '.csv'), index=None)
     print('Successfully converted xml to csv.')
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Input path to darknet')
+    parser.add_argument('DATA_PATH', type=str, nargs=1,
+                        help='Set path to data folder, containg datasets')
+    args = parser.parse_args()
+    DATA_PATH = args.DATA_PATH[0]
     main(DATA_PATH)

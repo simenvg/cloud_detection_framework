@@ -1,14 +1,8 @@
 import subprocess
 import os
 import argparse
-
-
-parser = argparse.ArgumentParser(description='Input path to darknet')
-parser.add_argument('DATA_PATH', type=str, nargs=1,
-                    help='Set path to data folder, containg datasets')
-
-args = parser.parse_args()
-DATA_PATH = args.DATA_PATH[0]
+import xml_to_csv.py
+import generate_tfrecords.py
 
 
 def edit_config_file(data_path):
@@ -60,4 +54,11 @@ def main(data_path):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Input path to darknet')
+    parser.add_argument('DATA_PATH', type=str, nargs=1,
+                        help='Set path to data folder, containg datasets')
+    args = parser.parse_args()
+    DATA_PATH = args.DATA_PATH[0]
+    xml_to_csv.main(DATA_PATH)
+    generate_tfrecords.main(DATA_PATH)
     main(DATA_PATH)

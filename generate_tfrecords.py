@@ -20,9 +20,7 @@ from PIL import Image
 from object_detection.utils import dataset_util
 from collections import namedtuple
 
-flags = tf.app.flags
-flags.DEFINE_string('data_path', '', 'Path to data folder')
-FLAGS = flags.FLAGS
+import argparse
 
 
 # TO-DO replace this with label map
@@ -88,7 +86,7 @@ def main(data_path):
         data_path, 'tmp', 'classes.txt'))
     for folder in folders:
         writer = tf.python_io.TFRecordWriter(os.path.join(data_path, 'SSD_mobilenet', 'data', folder + '.record'))
-        image_path = os.path.join(FLAGS.data_path, 'tmp', folder, 'JPEGImages')
+        image_path = os.path.join(data_path, 'tmp', folder, 'JPEGImages')
         examples = pd.read_csv(os.path.join(
             data_path, 'tmp', folder + '.csv'))
         grouped = split(examples, 'filename')
@@ -101,4 +99,9 @@ def main(data_path):
 
 
 if __name__ == '__main__':
-    tf.app.run(argv=FLAGS.data_path)
+    parser = argparse.ArgumentParser(description='Input path to darknet')
+    parser.add_argument('DATA_PATH', type=str, nargs=1,
+                        help='Set path to data folder, containg datasets')
+    args = parser.parse_args()
+    DATA_PATH = args.DATA_PATH[0]
+    main(DATA_PATH)
