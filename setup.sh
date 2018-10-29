@@ -53,7 +53,7 @@ sudo mv protoc3/include/* /usr/local/include/
 
 # Tensorflow
 cd ~
-sudo apt install python3-dev python3-pip
+sudo apt -y install python3-dev python3-pip
 sudo pip3 install -U virtualenv  # system-wide install
 virtualenv --system-site-packages -p python3 ./venv
 source ./venv/bin/activate  # sh, bash, ksh, or zsh
