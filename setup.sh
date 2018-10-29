@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd ~
 
 # Stuff
 sudo apt-get -y update
@@ -72,7 +73,7 @@ sed -i -e 's/          eval_config, category_index.values(), eval_dict)/        
 sed -i '27itf.logging.set_verbosity(tf.logging.INFO)' ./object_detection/model_main.py
 pip install pycocotools
 echo 'export PYTHONPATH=$PYTHONPATH:~/models/research:~/models/research/slim' >> ~/.bashrc 
-echo  'export protoc ~/models/research/object_detection/protos/*.proto --python_out=~/models/research' >> ~/.bashrc 
+echo  'protoc -I=$HOME/models/research $HOME/models/research/object_detection/protos/*.proto --python_out=$HOME/models/research' >> ~/.bashrc 
 
 deactivate
 
