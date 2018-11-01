@@ -42,6 +42,7 @@ cd darknet
 wget https://pjreddie.com/media/files/darknet53.conv.74
 sed -i 's/GPU=.*/GPU=1/' Makefile
 sed -i 's/CUDNN=.*/CUDNN=1/' Makefile
+sed -i -e 's/        if(i%10000==0 || (i < 1000 && i%100 == 0)){/        if(i%400==0){/g' ./examples/detector.c
 make
 
 # Protoc
