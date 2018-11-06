@@ -22,8 +22,8 @@ import darknet as dn
 
 
 dn.set_gpu(0)
-net = dn.load_net(os.path.join(DARKNET_PATH, "cfg/yolo-obj.cfg"), os.path.join(DARKNET_PATH,
-                                                                               "backup/yolo-obj_900.weights"), 0)
+net = dn.load_net(os.path.join(DARKNET_PATH, "cfg/yolo-obj_test.cfg"), os.path.join(DARKNET_PATH,
+                                                                                    "backup/yolo-obj_test_6000.weights"), 0)
 meta_data_net = dn.load_meta(os.path.join(DARKNET_PATH, "data/obj.data"))
 
 
@@ -53,7 +53,8 @@ def initialize_database():
 
 def add_to_db(conn, image_name, xmin, xmax, ymin, ymax, class_name, confidence):
     c = conn.cursor()
-    c.execute("INSERT INTO detections VALUES (image_name, int(xmin), int(xmax), int(ymin), int(ymax), class_name, confidence)")
+    c.execute("INSERT INTO detections (image_name, xmin, xmax, ymin, ymax, class_name, confidence) VALUES (?, ?, ?, ?, ?, ?, ?)"), (
+        image_name, xmin, xmax, ymin, ymax, class_name, confidence)
 
 
 def convert_yolo_format(x_center, y_center, width, height):
@@ -86,7 +87,8 @@ def write_detections_to_db(image_filepaths, thresh=0.5):
     for image in image_filepaths:
         boxes = get_yolo_detections(image, net, meta_data_net, thresh)
         for box in boxes:
-            add_to_db(conn, image, box.xmin, box.xmax, box.ymin, box.ymax, box.class_name, box.confidence)
+            add_to_db(conn, image, box.xmin, box.xmax, box.ymin,
+                      box.ymax, box.class_name, box.confidence)
     conn.commit()
     conn.close()
 
