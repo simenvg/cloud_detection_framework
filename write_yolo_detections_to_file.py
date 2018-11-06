@@ -44,7 +44,9 @@ class Box(object):
 
 
 def initialize_database():
-    conn = db.connect('''CREATE TABLE detections
+    conn = db.connect('detections.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE detections
                          (image_name text, xmin integer, xmax integer, ymin integer, ymax integer, class_name text, confidence real)''')
     return conn
 
