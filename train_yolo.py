@@ -44,15 +44,16 @@ def setup_tmp_folder():
     if os.path.exists(tmp_folder_path):
         shutil.rmtree(tmp_folder_path, ignore_errors=True)
     os.makedirs(tmp_folder_path)
+    os.makedirs(os.path.join(tmp_folder_path, 'backup'))
     os.makedirs(tmp_folder_test_path)
     os.makedirs(tmp_folder_train_path)
     return [tmp_folder_path, tmp_folder_train_path, tmp_folder_test_path]
 
 
 def generate_yolo_train_files():
-    training_dataset_paths = set_training_datasets(
-)    [tmp_folder_path, tmp_folder_train_path,
-        tmp_folder_test_path] = setup_tmp_folder()
+    training_dataset_paths = set_training_datasets()
+    [tmp_folder_path, tmp_folder_train_path,
+     tmp_folder_test_path] = setup_tmp_folder()
     train_txt = open(os.path.join(tmp_folder_path, 'train.txt'), 'w')
     test_txt = open(os.path.join(tmp_folder_path, 'test.txt'), 'w')
     for training_dataset in training_dataset_paths:
@@ -104,19 +105,6 @@ def update_cfg_file(num_classes):
     new_cfg_file.close()
 
 
-def update_weights_saved_interval():
-    detector_c = open(os.path.join(
-        DARKNET_PATH, 'examples', 'detector.c'), 'r')
-    lines = detector_c.readlines()
-    detector_c.close()
-    lines[137] = '        if(i%1000==0 || (i < 1000 && i%100 == 0)){ \n'
-    new_detector_c = open(os.path.join(
-        DARKNET_PATH, 'examples', 'detector.c'), 'w')
-    for line in lines:
-        new_detector_c.write(line)
-    new_detector_c.close()
-
-
 def generate_obj_data(num_classes):
     line1 = 'classes = ' + str(num_classes) + '\n'
     line2 = 'train = ' + os.path.join(DATA_PATH, 'tmp', 'train.txt') + '\n'
@@ -138,6 +126,5 @@ def train_yolo():
 if __name__ == '__main__':
     num_classes = generate_yolo_train_files()
     update_cfg_file(num_classes)
-    update_weights_saved_interval()
     generate_obj_data(num_classes)
     train_yolo()
