@@ -22,6 +22,7 @@ def set_training_datasets():
     except Exception as e:
         print 'No folder named ~/data'
         print 'Exception: ', e
+        exit()
     if len(datasets) == 0:
         print 'No datasets in ~/data, run config_new_dataset.py on your dataset and move the dataset folder to ~/data'
 
@@ -49,8 +50,8 @@ def setup_tmp_folder():
 
 
 def generate_yolo_train_files():
-    training_dataset_paths = set_training_datasets()
-    [tmp_folder_path, tmp_folder_train_path,
+    training_dataset_paths = set_training_datasets(
+)    [tmp_folder_path, tmp_folder_train_path,
         tmp_folder_test_path] = setup_tmp_folder()
     train_txt = open(os.path.join(tmp_folder_path, 'train.txt'), 'w')
     test_txt = open(os.path.join(tmp_folder_path, 'test.txt'), 'w')
@@ -121,7 +122,7 @@ def generate_obj_data(num_classes):
     line2 = 'train = ' + os.path.join(DATA_PATH, 'tmp', 'train.txt') + '\n'
     line3 = 'valid = ' + os.path.join(DATA_PATH, 'tmp', 'test.txt') + '\n'
     line4 = 'names = ' + os.path.join(DATA_PATH, 'tmp', 'classes.names') + '\n'
-    line5 = 'backup = ' + os.path.join(DARKNET_PATH, 'backup/')
+    line5 = 'backup = ' + os.path.join(DATA_PATH, 'tmp', 'backup/')
     lines = [line1, line2, line3, line4, line5]
     obj_data_file = open(os.path.join(DARKNET_PATH, 'data', 'obj.data'), 'w')
     for line in lines:
