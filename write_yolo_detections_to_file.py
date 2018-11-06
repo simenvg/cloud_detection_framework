@@ -2,11 +2,10 @@
 # Instead just add darknet.py to somewhere in your python path
 # OK actually that might not be a great idea, idk, work in progress
 # Use at your own risk. or don't, i don't care
-import xml.etree.ElementTree as ET
 import sys
 import os
 import argparse
-import pickle
+import sqlite3 as db
 
 
 parser = argparse.ArgumentParser(description='Input path to darknet')
@@ -35,25 +34,24 @@ image_filepaths = test_images_list_file.readlines()
 class Box(object):
     """docstring for Box"""
 
-    def __init__(self, cls, x_min, x_max, y_min, y_max, confidence=None):
-        self.cls = cls
-        self.x_min = x_min
-        self.x_max = x_max
-        self.y_min = y_min
-        self.y_max = y_max
+    def __init__(self, class_name, xmin, xmax, ymin, ymax, confidence=None):
+        self.class_name = class_name
+        self.xmin = xmin
+        self.xmax = xmax
+        self.ymin = ymin
+        self.ymax = ymax
         self.confidence = confidence
 
 
-def get_GT_boxes(label_filepath):
-    in_file = open(os.path.join(label_filepath), 'r')
-    tree = ET.parse(in_file)
-    root = tree.getroot()
-    boxes = []
-    for obj in root.iter('object'):
-        xmlbox = obj.find('bndbox')
-        boxes.append(Box(obj.find('name').text, float(xmlbox.find('xmin').text), float(
-            xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text)))
-    return boxes
+def initialize_database():
+    conn = db.connect('''CREATE TABLE detections
+                         (image_name text, xmin integer, xmax integer, ymin integer, ymax integer, class_name text, confidence real)''')
+    return conn
+
+
+def add_to_db(conn, image_name, xmin, xmax, ymin, ymax, class_name, confidence):
+    c = conn.cursor()
+    c.execute("INSERT INTO detections VALUES (image_name, int(xmin), int(xmax), int(ymin), int(ymax), class_name, confidence)")
 
 
 def convert_yolo_format(x_center, y_center, width, height):
@@ -81,13 +79,14 @@ def get_yolo_detections(image_name, net, meta_data_net, thresh=0.5):
     return get_detected_boxes(detections)
 
 
-def write_detections_to_file(image_filepaths, thresh=0.5):
-    detections = {}
+def write_detections_to_db(image_filepaths, thresh=0.5):
+    conn = initialize_database()
     for image in image_filepaths:
         boxes = get_yolo_detections(image, net, meta_data_net, thresh)
-        detections[image] = boxes
-    pickle.dump(detections, open(os.path.join(
-        DATA_PATH, 'tmp', 'YOLO_detections.txt'), 'wb'))
+        for box in boxes:
+            add_to_db(conn, image, box.xmin, box.xmax, box.ymin, box.ymax, box.class_name, box.confidence)
+    conn.commit()
+    conn.close()
 
 
-write_detections_to_file(image_filepaths, thresh=0.05)
+write_detections_to_db(image_filepaths, thresh=0.05)
