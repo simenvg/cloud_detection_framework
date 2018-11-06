@@ -1,4 +1,3 @@
-# Stupid python path shit.
 # Instead just add darknet.py to somewhere in your python path
 # OK actually that might not be a great idea, idk, work in progress
 # Use at your own risk. or don't, i don't care
@@ -6,21 +5,9 @@ import xml.etree.ElementTree as ET
 import sys
 import os
 import cv2
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-
-
-# DARKNET_PATH = "/home/simenvg/darknet"
-
-# sys.path.append(os.path.join(DARKNET_PATH, 'python/'))
-# import darknet as dn
-
-
-# dn.set_gpu(0)
-# net = dn.load_net(os.path.join(DARKNET_PATH, "cfg/yolo-obj.cfg"), os.path.join(DARKNET_PATH,
-#                                                                                "backup/yolo-obj_900.weights"), 0)
-# meta_data_net = dn.load_meta(os.path.join(DARKNET_PATH, "data/obj.data"))
+import sqlite3 as db
 
 
 test_images_list_file = open(os.path.join(
@@ -29,6 +16,7 @@ image_filepaths = test_images_list_file.readlines()
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
+BLUE = (255, 0, 0)
 
 
 class Box(object):
@@ -63,34 +51,6 @@ def convert_yolo_format(x_center, y_center, width, height):
     return [x_min, x_max, y_min, y_max]
 
 
-def get_detected_boxes(yolo_output):
-    boxes = []
-    for detection in yolo_output:
-        coordinates = convert_yolo_format(
-            detection[2][0], detection[2][1], detection[2][2], detection[2][3])
-        boxes.append(Box(detection[0], coordinates[0],
-                         coordinates[1], coordinates[2], coordinates[3], confidence=detection[1]))
-    return boxes
-
-
-# def get_yolo_detections(image_name, net, meta_data_net, thresh=0.5):
-#     detections = dn.detect(net, meta_data_net, os.path.join(
-#         DARKNET_PATH, image_name.strip()), thresh=thresh)
-#     print(detections)
-#     return get_detected_boxes(detections)
-
-
-# def write_detections_to_file(image_filepaths, thresh=0.5):
-#     detections = {}
-#     for image in image_filepaths:
-#         boxes = get_yolo_detections(image, net, meta_data_net, thresh)
-#         detections[image] = boxes
-#     pickle.dump(detections, open(os.path.join(
-#         DARKNET_PATH, 'YOLO_detections.txt'), 'wb'))
-
-
-# write_detections_to_file(image_filepaths, thresh=0.05)
-
 def get_intersected_area(box1, box2):
     dx = min(box1.x_max, box2.x_max) - max(box1.x_min, box2.x_min)
     dy = min(box1.y_max, box2.y_max) - max(box1.y_min, box2.y_min)
@@ -113,10 +73,6 @@ def get_iou(box1, box2):
 
 def valid_detection(detected_box, gt_box, iou_thresh=0.5):
     return get_iou(detected_box, gt_box) >= iou_thresh
-
-
-YOLO_detections = pickle.load(
-    open(os.path.join('/home/simenvg', 'YOLO_detections.txt'), "rb"))
 
 
 # def get_precision_recall(detections, iou_thresh, confidence_thresh=0.0):
@@ -159,40 +115,52 @@ YOLO_detections = pickle.load(
 # plt.show()
 
 
+conn = db.connect('''detections.db''')
+c = conn.cursor()
+
+
 # get_precision_recall(YOLO_detections, 0.1)
 font = cv2.FONT_HERSHEY_SIMPLEX
 bottomLeftCornerOfText = (10, 500)
-fontScale = 1
+fontScale = 0.3
 fontColor = (255, 255, 255)
-lineType = 2
+lineType = 1
 
 # print(YOLO_detections['data/obj/extra_kayak_axis0000.jpg'][0].confidence)
-
+i = 0
 for img in image_filepaths:
     gt_boxes = get_GT_boxes(os.path.join(
         '', (img.strip()[:-4] + '.xml')))
     # detections = get_yolo_detections(img, net, meta_data_net)
-    print(YOLO_detections[img])
-    detections = YOLO_detections[img]
+    c.execute('SELECT * FROM detections WHERE image_name=?', (img,))
+    detections = c.fetchall()
     im_path = os.path.join('/home/simenvg/data/tmp/test', img.strip())
     image = cv2.imread(im_path)
+    print(img)
     if image is None:
         print('No image')
         exit()
     for box in gt_boxes:
         cv2.rectangle(image, (int(box.x_min), int(box.y_max)),
-                      (int(box.x_max), int(box.y_min)), GREEN, 1)
+                      (int(box.x_max), int(box.y_min)), GREEN, 2)
     for box in detections:
-        cv2.rectangle(image, (int(box.x_min), int(box.y_max)),
-                      (int(box.x_max), int(box.y_min)), RED, 1)
-        cv2.putText(image, box.cls,
-                    (box.x_min, box.y_max),
-                    font,
-                    fontScale,
-                    RED,
-                    lineType)
-    cv2.imshow('ime', image)
-    cv2.waitKey(0)
+        if (box[5] == 'building'):
+            color = BLUE
+        else:
+            color = RED
+        cv2.rectangle(image, (int(box[1]), int(box[3])),
+                      (int(box[2]), int(box[4])), color, 2)
+        # cv2.putText(image, box[5],
+        #             (int(box[1]), int(box[3])),
+        #             font,
+        #             fontScale,
+        #             RED,
+        #             lineType)
+    # cv2.imshow('ime', image)
+    cv2.imwrite(os.path.join('/home/simenvg/results', 'image_' + str(i) + '.jpg'), image)
+    i += 1
+    # cv2.waitKey(0)
+conn.close()
 
 
 # image = cv2.imread(os.path.join("/home/simenvg/environments/my_env/test2/data/obj/extra_kayak_axis0000.jpg"))
