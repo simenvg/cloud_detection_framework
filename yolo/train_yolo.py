@@ -38,12 +38,12 @@ def set_training_datasets():
 
 
 def setup_model_folder():
-    tmp_folder_path = os.path.join(DATA_PATH, 'model')
-    if os.path.exists(tmp_folder_path):
-        shutil.rmtree(tmp_folder_path, ignore_errors=True)
-    os.makedirs(tmp_folder_path)
-    os.makedirs(os.path.join(tmp_folder_path, 'backup'))
-    return tmp_folder_path
+    model_folder_path = os.path.join(DATA_PATH, 'model')
+    if os.path.exists(model_folder_path):
+        shutil.rmtree(model_folder_path, ignore_errors=True)
+    os.makedirs(model_folder_path)
+    os.makedirs(os.path.join(model_folder_path, 'backup'))
+    return model_folder_path
 
 
 def generate_yolo_train_files():
@@ -53,7 +53,7 @@ def generate_yolo_train_files():
     train_txt = open(os.path.join(model_folder_path, 'train.txt'), 'w')
     test_txt = open(os.path.join(model_folder_path, 'test.txt'), 'w')
     for training_dataset_path in training_dataset_paths:
-        test_and_train_paths.extend(os.path.join(training_dataset_path, 'train'), os.path.join(training_dataset_path, 'test'))
+        test_and_train_paths.extend([os.path.join(training_dataset_path, 'train'), os.path.join(training_dataset_path, 'test')])
         for filename in os.listdir(os.path.join(training_dataset_path, 'train')):
             if filename.endswith('.jpg'):
                 train_txt.write(os.path.join(
