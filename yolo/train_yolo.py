@@ -37,51 +37,37 @@ def set_training_datasets():
     return training_dataset_paths
 
 
-def setup_tmp_folder():
-    tmp_folder_path = os.path.join(DATA_PATH, 'tmp')
-    tmp_folder_test_path = os.path.join(tmp_folder_path, 'test')
-    tmp_folder_train_path = os.path.join(tmp_folder_path, 'train')
+def setup_model_folder():
+    tmp_folder_path = os.path.join(DATA_PATH, 'model')
     if os.path.exists(tmp_folder_path):
         shutil.rmtree(tmp_folder_path, ignore_errors=True)
     os.makedirs(tmp_folder_path)
     os.makedirs(os.path.join(tmp_folder_path, 'backup'))
-    os.makedirs(tmp_folder_test_path)
-    os.makedirs(tmp_folder_train_path)
-    return [tmp_folder_path, tmp_folder_train_path, tmp_folder_test_path]
+    return tmp_folder_path
 
 
 def generate_yolo_train_files():
+    test_and_train_paths = []
     training_dataset_paths = set_training_datasets()
-    [tmp_folder_path, tmp_folder_train_path,
-     tmp_folder_test_path] = setup_tmp_folder()
-    train_txt = open(os.path.join(tmp_folder_path, 'train.txt'), 'w')
-    test_txt = open(os.path.join(tmp_folder_path, 'test.txt'), 'w')
-    for training_dataset in training_dataset_paths:
-        for filename in os.listdir(os.path.join(training_dataset, 'train')):
-            shutil.copy2(os.path.join(training_dataset, 'train',
-                                      filename), tmp_folder_train_path)
-            shutil.copy2(os.path.join(training_dataset, 'train',
-                                      filename[:-4] + '.xml'), tmp_folder_train_path)
+    model_folder_path = setup_model_folder()
+    train_txt = open(os.path.join(model_folder_path, 'train.txt'), 'w')
+    test_txt = open(os.path.join(model_folder_path, 'test.txt'), 'w')
+    for training_dataset_path in training_dataset_paths:
+        test_and_train_paths.extend(os.path.join(training_dataset_path, 'train'), os.path.join(training_dataset_path, 'test'))
+        for filename in os.listdir(os.path.join(training_dataset_path, 'train')):
             if filename.endswith('.jpg'):
                 train_txt.write(os.path.join(
-                    tmp_folder_train_path, filename) + '\n')
-        for filename in os.listdir(os.path.join(training_dataset, 'test')):
-            shutil.copy2(
-                os.path.join(training_dataset, 'test', filename), tmp_folder_test_path)
-            shutil.copy2(os.path.join(training_dataset, 'test',
-                                      filename[:-4] + '.xml'), tmp_folder_test_path)
+                    training_dataset_path, filename) + '\n')
+        for filename in os.listdir(os.path.join(training_dataset_path, 'test')):
             if filename.endswith('.jpg'):
                 test_txt.write(os.path.join(
-                    tmp_folder_test_path, filename) + '\n')
+                    training_dataset_path, filename) + '\n')
     test_txt.close()
     train_txt.close()
-    classes = convert_to_yolo_format.get_classes(
-        [tmp_folder_test_path, tmp_folder_train_path])
-    convert_to_yolo_format.generate_yolo_annotation_files(
-        tmp_folder_train_path, classes)
-    convert_to_yolo_format.generate_yolo_annotation_files(
-        tmp_folder_test_path, classes)
-    convert_to_yolo_format.generate_classes_file(tmp_folder_path, classes)
+    classes = convert_to_yolo_format.get_classes(test_and_train_paths)
+    for path in test_and_train_paths:
+        convert_to_yolo_format.generate_yolo_annotation_files(path, classes)
+    convert_to_yolo_format.generate_classes_file(model_folder_path, classes)
 
     return len(classes)
 
@@ -99,7 +85,7 @@ def update_cfg_file(num_classes):
     for filter_line in filter_lines:
         lines[filter_line] = 'filters=' + str(num_filters) + '\n'
     new_cfg_file = open(os.path.join(
-        DARKNET_PATH, 'cfg', 'yolo-obj_test.cfg'), 'w')
+        DATA_PATH, 'model', 'yolo-obj_test.cfg'), 'w')
     for line in lines:
         new_cfg_file.write(line)
     new_cfg_file.close()
@@ -112,7 +98,7 @@ def generate_obj_data(num_classes):
     line4 = 'names = ' + os.path.join(DATA_PATH, 'tmp', 'classes.names') + '\n'
     line5 = 'backup = ' + os.path.join(DATA_PATH, 'tmp', 'backup/')
     lines = [line1, line2, line3, line4, line5]
-    obj_data_file = open(os.path.join(DARKNET_PATH, 'data', 'obj.data'), 'w')
+    obj_data_file = open(os.path.join(DATA_PATH, 'model', 'obj.data'), 'w')
     for line in lines:
         obj_data_file.write(line)
     obj_data_file.close()
@@ -120,7 +106,7 @@ def generate_obj_data(num_classes):
 
 def train_yolo():
     subprocess.call(['/' + DARKNET_PATH + '/darknet', 'detector', 'train',
-                     DARKNET_PATH + '/data/obj.data', DARKNET_PATH + '/cfg/yolo-obj_test.cfg', DARKNET_PATH + '/darknet53.conv.74'])
+                     DATA_PATH + '/model/obj.data', DATA_PATH + '/model/yolo-obj_test.cfg', DARKNET_PATH + '/darknet53.conv.74'])
 
 
 if __name__ == '__main__':
