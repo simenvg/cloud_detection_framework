@@ -24,7 +24,9 @@ def find_best_weights_file(data_path):
     for file in files:
         if file.endswith('.weights'):
             filename_split = file.split('_')
-            if int(filename_split[-1].strip()[:-8]) > highest_iter:
+            num = int(filename_split[-1].strip()[:-8])
+            print(num)
+            if num > highest_iter:
                 highest_iter_path = os.path.join(data_path, 'model', 'backup', file)
     print('Weights PATH: ', highest_iter_path)
     return highest_iter_path
@@ -34,7 +36,7 @@ def find_best_weights_file(data_path):
 dn.set_gpu(0)
 net = dn.load_net(os.path.join(DATA_PATH, "model",
                                "yolo-obj_test.cfg"), find_best_weights_file(DATA_PATH), 0)
-meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "data/obj.data"))
+meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "model", "obj.data"))
 
 
 class Box(object):
