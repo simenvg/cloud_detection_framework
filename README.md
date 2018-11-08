@@ -6,12 +6,10 @@ This project is a part of my master thesis and serves as a framework for using G
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
 
-```
  * Setup a Google cloud instance with GPU and Ubuntu 16.04. This is tested for Nvidia Tesla K80. [See Googles get started guide](https://cloud.google.com/compute/docs/instances/create-start-instance)
  * Download and install the [gcloud SDK and command line tool](https://cloud.google.com/sdk/install)
-```
+
 
 ### Installing
 
@@ -44,7 +42,7 @@ from your home directory to get your paths correct
 
 ## Uploading Data
 
-To begin training we need some data. The data must be labelled in the Voc Pascal format, the xml files and the jpg files should be in the same folder. To label images [LabelImg](https://github.com/tzutalin/labelImg) which will label the images in the correct format. 
+To begin training we need some data. The data must be labelled in the VOC Pascal format, the xml files and the jpg files should be in the same folder. To label images [LabelImg](https://github.com/tzutalin/labelImg) which will label the images in the correct format. 
 
 During the setup a "data" directory was made in the home directory. In data's subdirectory "datasets" the data should be uploaded. It should look like this.
 
@@ -68,10 +66,33 @@ During the setup a "data" directory was made in the home directory. In data's su
 
 The dataset have to be split into a train and test directory, this can be done using split_dataset.py in resources.
 
+To upload a dataset to the Google Cloud instance use the following command
+
+```
+gcloud compute scp --recurse /LOCAL/PATH/TO/DATASET <instance-name>:~/data/datasets --zone <zone>
+```
+
+You can now run train_yolo.py which will ask the user which datasets to use for training.
+
+```
+python cloud_detection_framework/yolo/train_yolo.py /FULL/PATH/TO/DARKNET /FULL/PATH/TO/DATA/DIRECTORY
+```
+
+YOLO is implemented in Python 2, and SSD in Python 3, not to make it harder, but it was the only way while still using the original implementation I found. This was solved using a virtual environment for everything other than YOLO related stuff. Activate by using the command
+
+```
+source venv/bin/activate
+```
+from the home directory. When the Python 3 virtual environment is activated the following command can be run to train ssd
+```
+python cloud_detection_framework/ssd/train_ssd.py /FULL/PATH/TO/DATA/DIRECTORY
+```
+
+
 
 ## Authors
 
-* **Simen Viken Grini** - *Initial work* - [simenvg](https://github.com/simenvg)
+* **Simen Viken Grini** - [simenvg](https://github.com/simenvg)
 
 ## License
 
