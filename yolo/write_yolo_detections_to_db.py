@@ -118,7 +118,7 @@ def set_test_datasets(data_path):
 
 def edit_config_file_for_testing(data_path):
     config_file_train = open(os.path.join(
-        data_path, 'model', 'yolo-obj_test.cfg'), 'r')
+        data_path, 'model', 'yolo-obj_train.cfg'), 'r')
     lines = config_file_train.readlines()
     config_file_train.close()
     lines[2] = 'batch=1\n'
@@ -126,7 +126,7 @@ def edit_config_file_for_testing(data_path):
     lines[5] = '# batch=64\n'
     lines[6] = '# subdivisions=16\n'
     config_file_new = open(os.path.join(
-        data_path, 'model', 'yolo-obj_new.cfg'), 'w')
+        data_path, 'model', 'yolo-obj_test.cfg'), 'w')
     for line in lines:
         config_file_new.write(line)
     config_file_new.close()
@@ -139,6 +139,6 @@ if __name__ == '__main__':
         os.makedirs(result_path)
     dn.set_gpu(0)
     net = dn.load_net(os.path.join(DATA_PATH, "model",
-                                   "yolo-obj_new.cfg"), find_best_weights_file(DATA_PATH), 0)
+                                   "yolo-obj_test.cfg"), find_best_weights_file(DATA_PATH), 0)
     meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "model", "obj.data"))
     write_detections_to_db(set_test_datasets(DATA_PATH), thresh=0.05)

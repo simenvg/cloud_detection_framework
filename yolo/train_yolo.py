@@ -85,7 +85,7 @@ def update_cfg_file(num_classes):
     for filter_line in filter_lines:
         lines[filter_line] = 'filters=' + str(num_filters) + '\n'
     new_cfg_file = open(os.path.join(
-        DATA_PATH, 'model', 'yolo-obj_test.cfg'), 'w')
+        DATA_PATH, 'model', 'yolo-obj_train.cfg'), 'w')
     for line in lines:
         new_cfg_file.write(line)
     new_cfg_file.close()
@@ -106,7 +106,7 @@ def generate_obj_data(num_classes):
 
 def train_yolo():
     subprocess.call(['/' + DARKNET_PATH + '/darknet', 'detector', 'train',
-                     DATA_PATH + '/model/obj.data', DATA_PATH + '/model/yolo-obj_test.cfg', DARKNET_PATH + '/darknet53.conv.74'])
+                     DATA_PATH + '/model/obj.data', DATA_PATH + '/model/yolo-obj_train.cfg', DARKNET_PATH + '/darknet53.conv.74'])
 
 
 if __name__ == '__main__':
