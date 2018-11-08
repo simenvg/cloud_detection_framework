@@ -57,11 +57,11 @@ def generate_yolo_train_files():
         for filename in os.listdir(os.path.join(training_dataset_path, 'train')):
             if filename.endswith('.jpg'):
                 train_txt.write(os.path.join(
-                    training_dataset_path, filename) + '\n')
+                    training_dataset_path, 'train', filename) + '\n')
         for filename in os.listdir(os.path.join(training_dataset_path, 'test')):
             if filename.endswith('.jpg'):
                 test_txt.write(os.path.join(
-                    training_dataset_path, filename) + '\n')
+                    training_dataset_path, 'test', filename) + '\n')
     test_txt.close()
     train_txt.close()
     classes = convert_to_yolo_format.get_classes(test_and_train_paths)
