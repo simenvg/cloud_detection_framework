@@ -80,7 +80,7 @@ def get_detected_boxes(yolo_output):
 def get_yolo_detections(image_name, net, meta_data_net, thresh=0.5):
     detections = dn.detect(net, meta_data_net, os.path.join(
         DARKNET_PATH, image_name.strip()), thresh=thresh)
-    print(detections)
+    print(len(detections))
     return get_detected_boxes(detections)
 
 
@@ -121,10 +121,10 @@ def edit_config_file_for_testing(data_path):
         data_path, 'model', 'yolo-obj_test.cfg'), 'r')
     lines = config_file_train.readlines()
     config_file_train.close()
-    lines[2] = 'batch=1'
-    lines[3] = 'subdivisions=1'
-    lines[5] = '# batch=64'
-    lines[6] = '# subdivisions=16'
+    lines[2] = 'batch=1\n'
+    lines[3] = 'subdivisions=1\n'
+    lines[5] = '# batch=64\n'
+    lines[6] = '# subdivisions=16\n'
     config_file_new = open(os.path.join(
         data_path, 'model', 'yolo-obj_new.cfg'), 'w')
     for line in lines:
