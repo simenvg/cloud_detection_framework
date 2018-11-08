@@ -115,17 +115,17 @@ def get_precision_recall2(detections, iou_thresh, confidence_thresh=0.0):
 def save_images_with_boxes(conn, data_path):
     c = conn.cursor()
     i = 0
-    test_file = open(data_path, 'model', 'test.txt')
+    test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
     image_filepaths = test_file.readlines()
     test_file.close()
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join(
             '', (img.strip()[:-4] + '.xml')))
-        c.execute('SELECT * FROM detections WHERE image_name=?', (img,))
+        c.execute('SELECT * FROM detections WHERE image_name=?', (img.strip(),))
         detections = c.fetchall()
         # im_path = os.path.join('/home/simenvg/data/tmp/test', img.strip())
-        image = cv2.imread(img)
-        print(img)
+        image = cv2.imread(img.strip())
+        print(img.strip())
         if image is None:
             print('No image')
             exit()
