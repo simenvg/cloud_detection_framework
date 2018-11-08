@@ -102,7 +102,7 @@ def set_test_datasets(data_path):
     for i in range(0, len(datasets)):
         print '[', i, ']', datasets[i]
     user_input = str(raw_input(
-        'Input the number for the datasets you wish to train on, separate numbers with space: ')).split()
+        'Input the number for the datasets you wish to test on, separate numbers with space: ')).split()
     training_dataset_paths = []
     for dataset_index in user_input:
         training_dataset_paths.append(
