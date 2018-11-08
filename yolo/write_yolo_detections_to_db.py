@@ -1,8 +1,7 @@
 import sys
 import os
 import argparse
-import sqlite3
-
+import sqlite3 as db
 
 parser = argparse.ArgumentParser(description='Input path to darknet')
 parser.add_argument('DATA_PATH', type=str, nargs=1,
@@ -13,21 +12,28 @@ parser.add_argument('DARKNET_PATH', type=str, nargs=1,
 args = parser.parse_args()
 DATA_PATH = args.DATA_PATH[0]
 DARKNET_PATH = args.DARKNET_PATH[0]
-
-#Adds Darknet to python path
+# Adds Darknet to python path
 sys.path.append(os.path.join(DARKNET_PATH, 'python/'))
 import darknet as dn
 
+
+def find_best_weights_file(data_path):
+    files = os.listdir(os.path.join(data_path, 'backup'))
+    highest_iter = 0
+    highest_iter_path = ''
+    for file in files:
+        if file.endswith('.weights'):
+            filename_split = file.split('_')
+            if int(filename_split[-1].strip()) > highest_iter:
+                highest_iter_path = os.path.join(data_path, 'backup', file)
+    return highest_iter_path
+
+
 # Initialize detector
 dn.set_gpu(0)
-net = dn.load_net(os.path.join(DARKNET_PATH, "cfg/yolo-obj_test.cfg"), os.path.join(DARKNET_PATH,
-                                                                                    "backup/yolo-obj_test_6000.weights"), 0)
-meta_data_net = dn.load_meta(os.path.join(DARKNET_PATH, "data/obj.data"))
-
-
-# Load test images
-test_images_list_file = open(os.path.join(DATA_PATH, 'tmp', "test.txt"), "r")
-image_filepaths = test_images_list_file.readlines()
+net = dn.load_net(os.path.join(DATA_PATH, "model",
+                               "yolo-obj_test.cfg"), find_best_weights_file(DATA_PATH), 0)
+meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "data/obj.data"))
 
 
 class Box(object):
@@ -43,7 +49,7 @@ class Box(object):
 
 
 def initialize_database():
-    conn = db.connect('detections.db')
+    conn = db.connect(os.path.join(DATA_PATH, 'results', 'detections.db'))
     c = conn.cursor()
     c.execute('''CREATE TABLE detections
                          (image_name text, xmin integer, xmax integer, ymin integer, ymax integer, class_name text, confidence real)''')
@@ -82,7 +88,7 @@ def get_yolo_detections(image_name, net, meta_data_net, thresh=0.5):
 
 
 def write_detections_to_db(image_filepaths, thresh=0.5):
-    conn = database.initialize_database()
+    conn = initialize_database()
     for image in image_filepaths:
         boxes = get_yolo_detections(image, net, meta_data_net, thresh)
         for box in boxes:
@@ -92,4 +98,29 @@ def write_detections_to_db(image_filepaths, thresh=0.5):
     conn.close()
 
 
-write_detections_to_db(image_filepaths, thresh=0.05)
+def set_test_datasets(data_path):
+    datasets = os.listdir(os.path.join(data_path, 'datasets'))
+    if len(datasets) == 0:
+        print 'No datasets in ~/data, run config_new_dataset.py on your dataset and move the dataset folder to ~/data'
+    for i in range(0, len(datasets)):
+        print '[', i, ']', datasets[i]
+    user_input = str(raw_input(
+        'Input the number for the datasets you wish to train on, separate numbers with space: ')).split()
+    training_dataset_paths = []
+    for dataset_index in user_input:
+        training_dataset_paths.append(
+            os.path.join(DATA_PATH, 'datasets', datasets[int(dataset_index)]))
+    test_image_filepaths = []
+    for training_dataset_path in training_dataset_paths:
+        for file in os.listdir(os.path.join(training_dataset_path, 'test')):
+            if file.endswith('.jpg'):
+                test_image_filepaths.append(os.path.join(
+                    training_dataset_path, 'test', file))
+    return test_image_filepaths
+
+
+if __name__ == '__main__':
+    result_path = os.path.join(DATA_PATH, 'results')
+    if not os.path.exists(result_path):
+        os.makedirs(result_path)
+    write_detections_to_db(set_test_datasets(DATA_PATH), thresh=0.05)
