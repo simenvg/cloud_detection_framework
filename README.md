@@ -9,8 +9,8 @@ This project is a part of my master thesis and serves as a framework for using G
 What things you need to install the software and how to install them
 
 ```
- * Setup a Google cloud instance with GPU and Ubuntu 16.04. This is tested for Nvidia Tesla K80. [See Googles get started guide] (https://cloud.google.com/compute/docs/instances/create-start-instance)
- * Download and install the [gcloud SDK and command line tool] (https://cloud.google.com/sdk/install)
+ * Setup a Google cloud instance with GPU and Ubuntu 16.04. This is tested for Nvidia Tesla K80. [See Googles get started guide](https://cloud.google.com/compute/docs/instances/create-start-instance)
+ * Download and install the [gcloud SDK and command line tool](https://cloud.google.com/sdk/install)
 ```
 
 ### Installing
@@ -44,7 +44,7 @@ from your home directory to get your paths correct
 
 ## Uploading Data
 
-To begin training we need some data. The data must be labelled in the Voc Pascal format, the xml files and the jpg files should be in the same folder. To label images [LabelImg] (https://github.com/tzutalin/labelImg) which will label the images in the correct format. 
+To begin training we need some data. The data must be labelled in the Voc Pascal format, the xml files and the jpg files should be in the same folder. To label images [LabelImg](https://github.com/tzutalin/labelImg) which will label the images in the correct format. 
 
 During the setup a "data" directory was made in the home directory. In data's subdirectory "datasets" the data should be uploaded. It should look like this.
 
