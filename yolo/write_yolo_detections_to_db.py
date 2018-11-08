@@ -24,7 +24,7 @@ def find_best_weights_file(data_path):
     for file in files:
         if file.endswith('.weights'):
             filename_split = file.split('_')
-            if int(filename_split[-1].strip()) > highest_iter:
+            if int(filename_split[-1].strip()[:-8]) > highest_iter:
                 highest_iter_path = os.path.join(data_path, 'model', 'backup', file)
     print('Weights PATH: ', highest_iter_path)
     return highest_iter_path
