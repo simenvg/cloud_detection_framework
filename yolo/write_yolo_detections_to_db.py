@@ -18,14 +18,15 @@ import darknet as dn
 
 
 def find_best_weights_file(data_path):
-    files = os.listdir(os.path.join(data_path, 'backup'))
+    files = os.listdir(os.path.join(data_path, 'model', 'backup'))
     highest_iter = 0
     highest_iter_path = ''
     for file in files:
         if file.endswith('.weights'):
             filename_split = file.split('_')
             if int(filename_split[-1].strip()) > highest_iter:
-                highest_iter_path = os.path.join(data_path, 'backup', file)
+                highest_iter_path = os.path.join(data_path, 'model', 'backup', file)
+    print('Weights PATH: ', highest_iter_path)
     return highest_iter_path
 
 
