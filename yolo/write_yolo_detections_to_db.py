@@ -27,16 +27,10 @@ def find_best_weights_file(data_path):
             num = int(filename_split[-1].strip()[:-8])
             if num > highest_iter:
                 highest_iter = num
-                highest_iter_path = os.path.join(data_path, 'model', 'backup', file)
+                highest_iter_path = os.path.join(
+                    data_path, 'model', 'backup', file)
     print('Weights PATH: ', highest_iter_path)
     return highest_iter_path
-
-
-# Initialize detector
-dn.set_gpu(0)
-net = dn.load_net(os.path.join(DATA_PATH, "model",
-                               "yolo-obj_test.cfg"), find_best_weights_file(DATA_PATH), 0)
-meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "model", "obj.data"))
 
 
 class Box(object):
@@ -122,8 +116,29 @@ def set_test_datasets(data_path):
     return test_image_filepaths
 
 
+def edit_config_file_for_testing(data_path):
+    config_file_train = open(os.path.join(
+        data_path, 'model', 'yolo-obj_test.cfg'), 'r')
+    lines = config_file_train.readlines()
+    config_file_train.close()
+    lines[2] = 'batch=1'
+    lines[3] = 'subdivisions=1'
+    lines[5] = '# batch=64'
+    lines[6] = '# subdivisions=16'
+    config_file_new = open(os.path.join(
+        data_path, 'model', 'yolo-obj_new.cfg'), 'w')
+    for line in lines:
+        config_file_new.write(line)
+    config_file_new.close()
+
+
 if __name__ == '__main__':
+    edit_config_file_for_testing(DATA_PATH)
     result_path = os.path.join(DATA_PATH, 'results')
     if not os.path.exists(result_path):
         os.makedirs(result_path)
+    dn.set_gpu(0)
+    net = dn.load_net(os.path.join(DATA_PATH, "model",
+                                   "yolo-obj_new.cfg"), find_best_weights_file(DATA_PATH), 0)
+    meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "model", "obj.data"))
     write_detections_to_db(set_test_datasets(DATA_PATH), thresh=0.05)
