@@ -93,10 +93,10 @@ def update_cfg_file(num_classes):
 
 def generate_obj_data(num_classes):
     line1 = 'classes = ' + str(num_classes) + '\n'
-    line2 = 'train = ' + os.path.join(DATA_PATH, 'tmp', 'train.txt') + '\n'
-    line3 = 'valid = ' + os.path.join(DATA_PATH, 'tmp', 'test.txt') + '\n'
-    line4 = 'names = ' + os.path.join(DATA_PATH, 'tmp', 'classes.names') + '\n'
-    line5 = 'backup = ' + os.path.join(DATA_PATH, 'tmp', 'backup/')
+    line2 = 'train = ' + os.path.join(DATA_PATH, 'model', 'train.txt') + '\n'
+    line3 = 'valid = ' + os.path.join(DATA_PATH, 'model', 'test.txt') + '\n'
+    line4 = 'names = ' + os.path.join(DATA_PATH, 'model', 'classes.names') + '\n'
+    line5 = 'backup = ' + os.path.join(DATA_PATH, 'model', 'backup/')
     lines = [line1, line2, line3, line4, line5]
     obj_data_file = open(os.path.join(DATA_PATH, 'model', 'obj.data'), 'w')
     for line in lines:
