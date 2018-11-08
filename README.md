@@ -7,7 +7,7 @@ This project is a part of my master thesis and serves as a framework for using G
 ### Prerequisites
 
 
- * Setup a Google cloud instance with GPU and Ubuntu 16.04. This is tested for Nvidia Tesla K80. [See Googles get started guide](https://cloud.google.com/compute/docs/instances/create-start-instance)
+ * Setup a Google cloud instance with GPU and Ubuntu 16.04. This is tested on a Nvidia Tesla K80 GPU. [See Googles get started guide](https://cloud.google.com/compute/docs/instances/create-start-instance)
  * Download and install the [gcloud SDK and command line tool](https://cloud.google.com/sdk/install)
 
 
@@ -72,6 +72,8 @@ To upload a dataset to the Google Cloud instance use the following command
 gcloud compute scp --recurse /LOCAL/PATH/TO/DATASET <instance-name>:~/data/datasets --zone <zone>
 ```
 
+## Training
+
 You can now run train_yolo.py which will ask the user which datasets to use for training.
 
 ```
@@ -88,6 +90,7 @@ from the home directory. When the Python 3 virtual environment is activated the 
 python cloud_detection_framework/ssd/train_ssd.py /FULL/PATH/TO/DATA/DIRECTORY
 ```
 
+## Testing
 
 
 ## Authors
