@@ -9,6 +9,8 @@ sudo apt-get -y install git
 sudo apt-get -y install gcc
 sudo apt-get -y install make
 sudo apt-get -y install unzip
+sudo apt-get -y install python-pip
+pip install opencv-python
 
 export LC_ALL=en_US.UTF-8
 echo  'export LC_ALL=en_US.UTF-8' >> ~/.bashrc 
@@ -20,6 +22,7 @@ sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/
 sudo dpkg -i cuda-repo-ubuntu1604_9.0.176-1_amd64.deb
 sudo apt-get update
 sudo apt-get -y install cuda-9-0
+
 
 
 # CUDNN
@@ -63,6 +66,7 @@ pip install --upgrade tensorflow-gpu
 pip install pandas
 pip install lxml
 pip install pillow
+pip install opencv-python
 
 # Tensorflow object detection API
 cd ~
