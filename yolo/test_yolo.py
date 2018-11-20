@@ -72,20 +72,26 @@ def valid_detection(detected_box, gt_box, iou_thresh=0.5):
     return get_iou(detected_box, gt_box) >= iou_thresh
 
 
-def get_precision_recall2(detections, iou_thresh, confidence_thresh=0.0):
+def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     true_positives = 0
     num_detections = 0
     num_gt_boxes = 0
-    for key, value in detections.iteritems():
-        gt_boxes = get_GT_boxes(os.path.join(
-            '/home/simenvg/tmp/test', (key.strip()[:-4] + '.xml')))
-        num_detections += len(value)
+    c = conn.cursor()
+    test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
+    image_filepaths = test_file.readlines()
+    test_file.close()
+    for img in image_filepaths:
+        gt_boxes = get_GT_boxes(os.path.join((img.strip()[:-4] + '.xml')))
+        c.execute('SELECT * FROM detections WHERE image_name=?', (img.strip(),))
+        detections = c.fetchall()
+        num_detections += len(detections)
         for gt_box in gt_boxes:
-            for detected_box in value:
+            for i in range(len(detections) - 1, -1, -1):
+                detected_box = Box(detections[i][5], detections[i][1], detections[i][2], detections[i][3], detections[i][4], detections[i][6])
                 if detected_box.confidence >= confidence_thresh:
                     if valid_detection(detected_box, gt_box, iou_thresh=iou_thresh):
                         true_positives += 1
-                        value.remove(detected_box)
+                        detections.remove(detected_box)
                         break
         num_gt_boxes += len(gt_boxes)
     precision = float(true_positives) / float(num_detections)
@@ -114,7 +120,6 @@ def get_precision_recall2(detections, iou_thresh, confidence_thresh=0.0):
 
 def save_images_with_boxes(conn, data_path):
     c = conn.cursor()
-    i = 0
     test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
     image_filepaths = test_file.readlines()
     test_file.close()
@@ -123,7 +128,6 @@ def save_images_with_boxes(conn, data_path):
             '', (img.strip()[:-4] + '.xml')))
         c.execute('SELECT * FROM detections WHERE image_name=?', (img.strip(),))
         detections = c.fetchall()
-        # im_path = os.path.join('/home/simenvg/data/tmp/test', img.strip())
         image = cv2.imread(img.strip())
         print(img.strip())
         if image is None:
@@ -140,13 +144,13 @@ def save_images_with_boxes(conn, data_path):
             cv2.rectangle(image, (int(box[1]), int(box[3])),
                           (int(box[2]), int(box[4])), color, 2)
         cv2.imwrite(os.path.join(data_path, 'results',
-                                 'image_' + str(i) + '.jpg'), image)
-        i += 1
+                                 img.strip() + '_result' + '.jpg'), image)
 
 
 def main(data_path):
     conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
     save_images_with_boxes(conn, data_path)
+    print(get_precision_recall(conn, data_path, 0.5))
     conn.close()
 
 
