@@ -6,7 +6,7 @@ import sys
 import os
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sqlite3 as db
 import argparse
 
@@ -91,7 +91,7 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
                 if detected_box.confidence >= confidence_thresh:
                     if valid_detection(detected_box, gt_box, iou_thresh=iou_thresh):
                         true_positives += 1
-                        detections.remove(detected_box)
+                        detections.remove(detections[i])
                         break
         num_gt_boxes += len(gt_boxes)
     precision = float(true_positives) / float(num_detections)
