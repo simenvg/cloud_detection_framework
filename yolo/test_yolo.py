@@ -105,6 +105,7 @@ def save_images_with_boxes(conn, data_path):
     test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
     image_filepaths = test_file.readlines()
     test_file.close()
+    i = 0
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join(
             '', (img.strip()[:-4] + '.xml')))
@@ -126,7 +127,8 @@ def save_images_with_boxes(conn, data_path):
             cv2.rectangle(image, (int(box[1]), int(box[3])),
                           (int(box[2]), int(box[4])), color, 2)
         cv2.imwrite(os.path.join(data_path, 'results',
-                                 img.split('/')[-1].strip() + '_result' + '.jpg'), image)
+                                 'image_' + str(i) + '.jpg'), image)
+        i += 1
 
 
 def main(data_path):
