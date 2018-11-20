@@ -156,7 +156,7 @@ def main(data_path):
     plt.grid(True)
     plt.xlabel('Recall')
     plt.ylabel('Precision')
-    plt.savefig('prec_recall.png')
+    plt.savefig(os.path.join(data_path, 'results', 'prec_recall.png'))
     conn.close()
 
 
