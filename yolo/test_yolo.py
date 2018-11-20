@@ -99,25 +99,6 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     return (precision, recall)
 
 
-# iou_threshs = [x * 0.01 for x in range(0, 100)]
-
-
-# precisions = []
-# recalls = []
-# for iou_thresh in iou_threshs:
-#     (precision, recall) = get_precision_recall(YOLO_detections, iou_thresh)
-#     precisions.append(precision)
-#     recalls.append(recall)
-
-# print(precisions)
-# print(recalls)
-
-
-# plt.plot(recalls, precisions)
-# plt.grid(True)
-# plt.show()
-
-
 def save_images_with_boxes(conn, data_path):
     c = conn.cursor()
     test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
@@ -150,7 +131,19 @@ def save_images_with_boxes(conn, data_path):
 def main(data_path):
     conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
     save_images_with_boxes(conn, data_path)
-    print(get_precision_recall(conn, data_path, 0.5))
+    iou_threshs = [x * 0.01 for x in range(0, 100)]
+    precisions = []
+    recalls = []
+    for iou_thresh in iou_threshs:
+        (precision, recall) = get_precision_recall(conn, data_path, iou_thresh)
+        precisions.append(precision)
+        recalls.append(recall)
+    print(precisions)
+    print(recalls)
+    # print(get_precision_recall(conn, data_path, 0.5))
+    # plt.plot(recalls, precisions)
+    # plt.grid(True)
+    # plt.show()
     conn.close()
 
 
