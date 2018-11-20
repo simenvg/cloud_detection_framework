@@ -7,8 +7,11 @@ import os
 import cv2
 import sqlite3 as db
 import argparse
-import matplotlib
-matplotlib.use('Agg')
+import matplotlib as mpl
+if os.environ.get('DISPLAY', '') == '':
+    print('no display found. Using non-interactive Agg backend')
+    mpl.use('Agg')
+import matplotlib.pyplot as plt
 
 
 RED = (0, 0, 255)
@@ -149,11 +152,11 @@ def main(data_path):
     print(precisions)
     print(recalls)
     # print(get_precision_recall(conn, data_path, 0.5))
-    matplotlib.pyplot.plot(recalls, precisions)
-    matplotlib.pyplot.grid(True)
-    matplotlib.pyplot.xlabel('Recall')
-    matplotlib.pyplot.ylabel('Precision')
-    matplotlib.pyplot.savefig('prec_recall.png')
+    plt.plot(recalls, precisions)
+    plt.grid(True)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.savefig('prec_recall.png')
     conn.close()
 
 
