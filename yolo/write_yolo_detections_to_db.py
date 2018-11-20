@@ -84,7 +84,7 @@ def get_yolo_detections(image_name, net, meta_data_net, thresh=0.5):
     return get_detected_boxes(detections)
 
 
-def write_detections_to_db(image_filepaths, thresh=0.5):
+def write_detections_to_db(image_filepaths, thresh=0.05):
     conn = initialize_database()
     for image in image_filepaths:
         boxes = get_yolo_detections(image, net, meta_data_net, thresh)
