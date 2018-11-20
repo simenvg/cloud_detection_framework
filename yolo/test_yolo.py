@@ -82,7 +82,7 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     test_file.close()
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join((img.strip()[:-4] + '.xml')))
-        c.execute('SELECT * FROM detections WHERE image_name=?', (img.strip(),))
+        c.execute('SELECT * FROM detections WHERE image_name=? and confidence>=?', (img.strip(), confidence_thresh))
         detections = c.fetchall()
         num_detections += len(detections)
         for gt_box in gt_boxes:
@@ -100,7 +100,7 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     return (precision, recall)
 
 
-def save_images_with_boxes(conn, data_path):
+def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
     c = conn.cursor()
     test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
     image_filepaths = test_file.readlines()
@@ -109,7 +109,7 @@ def save_images_with_boxes(conn, data_path):
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join(
             '', (img.strip()[:-4] + '.xml')))
-        c.execute('SELECT * FROM detections WHERE image_name=?', (img.strip(),))
+        c.execute('SELECT * FROM detections WHERE image_name=? AND confidence>=?', (img.strip(), conf_thresh))
         detections = c.fetchall()
         image = cv2.imread(img.strip())
         print(img.strip())
