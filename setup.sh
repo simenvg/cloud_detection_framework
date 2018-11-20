@@ -10,7 +10,7 @@ sudo apt-get -y install gcc
 sudo apt-get -y install make
 sudo apt-get -y install unzip
 sudo apt-get -y install python-pip
-pip install opencv-python
+
 
 export LC_ALL=en_US.UTF-8
 echo  'export LC_ALL=en_US.UTF-8' >> ~/.bashrc 
@@ -84,6 +84,7 @@ echo  'protoc -I=$HOME/models/research $HOME/models/research/object_detection/pr
 
 deactivate
 
+pip install opencv-python
 
 # Setup data folder
 cd ~
