@@ -94,6 +94,7 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
                         detections.remove(detections[i])
                         break
         num_gt_boxes += len(gt_boxes)
+    print('TP: ', true_positives, '   num_detections: ', num_detections, '   num_gt: ', num_gt_boxes)
     precision = float(true_positives) / float(num_detections)
     recall = float(true_positives) / float(num_gt_boxes)
     return (precision, recall)
@@ -125,13 +126,13 @@ def save_images_with_boxes(conn, data_path):
             cv2.rectangle(image, (int(box[1]), int(box[3])),
                           (int(box[2]), int(box[4])), color, 2)
         cv2.imwrite(os.path.join(data_path, 'results',
-                                 img.strip() + '_result' + '.jpg'), image)
+                                 img.split('/')[-1].strip() + '_result' + '.jpg'), image)
 
 
 def main(data_path):
     conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
     save_images_with_boxes(conn, data_path)
-    conf_threshs = [x * 0.01 for x in range(0, 100)]
+    conf_threshs = [x * 0.1 for x in range(0, 10)]
     precisions = []
     recalls = []
     for conf_thresh in conf_threshs:
