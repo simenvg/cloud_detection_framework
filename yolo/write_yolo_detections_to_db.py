@@ -84,7 +84,7 @@ def get_yolo_detections(image_name, net, meta_data_net, thresh=0.5):
     return get_detected_boxes(detections)
 
 
-def write_detections_to_db(image_filepaths, thresh=0.05):
+def write_detections_to_db(image_filepaths, thresh=):
     conn = initialize_database()
     for image in image_filepaths:
         boxes = get_yolo_detections(image, net, meta_data_net, thresh)
@@ -145,4 +145,4 @@ if __name__ == '__main__':
     net = dn.load_net(os.path.join(DATA_PATH, "model",
                                    "yolo-obj_test.cfg"), find_best_weights_file(DATA_PATH), 0)
     meta_data_net = dn.load_meta(os.path.join(DATA_PATH, "model", "obj.data"))
-    write_detections_to_db(set_test_datasets(DATA_PATH), thresh=0.05)
+    write_detections_to_db(set_test_datasets(DATA_PATH), thresh=0.001)
