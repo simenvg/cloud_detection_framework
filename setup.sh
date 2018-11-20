@@ -10,6 +10,7 @@ sudo apt-get -y install gcc
 sudo apt-get -y install make
 sudo apt-get -y install unzip
 sudo apt-get -y install python-pip
+sudo apt-get -y install python-tk
 
 
 export LC_ALL=en_US.UTF-8
@@ -61,8 +62,8 @@ sudo mv protoc3/include/* /usr/local/include/
 cd ~
 sudo apt -y install python3-dev python3-pip
 sudo pip3 install -U virtualenv  # system-wide install
-virtualenv --system-site-packages -p python3 ./venv
-source ./venv/bin/activate  # sh, bash, ksh, or zsh
+virtualenv --system-site-packages -p python3 ./venv_py3
+source ./venv_py3/bin/activate  # sh, bash, ksh, or zsh
 pip install --upgrade pip
 pip install --upgrade tensorflow-gpu
 pip install pandas
@@ -85,8 +86,12 @@ echo  'protoc -I=$HOME/models/research $HOME/models/research/object_detection/pr
 
 deactivate
 
+cd ~
+virtualenv --system-site-packages -p python2 ./venv_py2
+source ./venv_py2/bin/activate  # sh, bash, ksh, or zsh
 pip install opencv-python
 pip install matplotlib
+deactivate
 
 # Setup data folder
 cd ~

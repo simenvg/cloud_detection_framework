@@ -4,10 +4,11 @@
 import xml.etree.ElementTree as ET
 import os
 import cv2
+import matplotlib
 import matplotlib.pyplot as plt
 import sqlite3 as db
 import argparse
-
+matplotlib.use('Agg')
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -151,7 +152,7 @@ def main(data_path):
     plt.grid(True)
     plt.xlabel('Recall')
     plt.ylabel('Precision')
-    plt.savefig(os.path.join(data_path, 'results', 'prec_recall.png'))
+    plt.savefig('prec_recall.png')
     conn.close()
 
 
