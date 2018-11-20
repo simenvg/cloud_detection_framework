@@ -1,14 +1,15 @@
 # Instead just add darknet.py to somewhere in your python path
 # OK actually that might not be a great idea, idk, work in progress
 # Use at your own risk. or don't, i don't care
+
 import xml.etree.ElementTree as ET
 import os
 import cv2
-import matplotlib
-import matplotlib.pyplot as plt
 import sqlite3 as db
 import argparse
+import matplotlib
 matplotlib.use('Agg')
+
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -148,11 +149,11 @@ def main(data_path):
     print(precisions)
     print(recalls)
     # print(get_precision_recall(conn, data_path, 0.5))
-    plt.plot(recalls, precisions)
-    plt.grid(True)
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.savefig('prec_recall.png')
+    matplotlib.pyplot.plot(recalls, precisions)
+    matplotlib.pyplot.grid(True)
+    matplotlib.pyplot.xlabel('Recall')
+    matplotlib.pyplot.ylabel('Precision')
+    matplotlib.pyplot.savefig('prec_recall.png')
     conn.close()
 
 
