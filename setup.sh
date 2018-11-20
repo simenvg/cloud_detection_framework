@@ -69,6 +69,7 @@ pip install pandas
 pip install lxml
 pip install pillow
 pip install opencv-python
+pip install matplotlib
 
 # Tensorflow object detection API
 cd ~
@@ -85,6 +86,7 @@ echo  'protoc -I=$HOME/models/research $HOME/models/research/object_detection/pr
 deactivate
 
 pip install opencv-python
+pip install matplotlib
 
 # Setup data folder
 cd ~

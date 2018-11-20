@@ -2,11 +2,9 @@
 # OK actually that might not be a great idea, idk, work in progress
 # Use at your own risk. or don't, i don't care
 import xml.etree.ElementTree as ET
-import sys
 import os
 import cv2
-import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import sqlite3 as db
 import argparse
 
@@ -82,19 +80,22 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     test_file.close()
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join((img.strip()[:-4] + '.xml')))
-        c.execute('SELECT * FROM detections WHERE image_name=? and confidence>=?', (img.strip(), confidence_thresh))
+        c.execute('SELECT * FROM detections WHERE image_name=? and confidence>=?',
+                  (img.strip(), confidence_thresh))
         detections = c.fetchall()
         num_detections += len(detections)
         for gt_box in gt_boxes:
             for i in range(len(detections) - 1, -1, -1):
-                detected_box = Box(detections[i][5], detections[i][1], detections[i][2], detections[i][3], detections[i][4], detections[i][6])
+                detected_box = Box(detections[i][5], detections[i][1], detections[i]
+                                   [2], detections[i][3], detections[i][4], detections[i][6])
                 if detected_box.confidence >= confidence_thresh:
                     if valid_detection(detected_box, gt_box, iou_thresh=iou_thresh):
                         true_positives += 1
                         detections.remove(detections[i])
                         break
         num_gt_boxes += len(gt_boxes)
-    print('TP: ', true_positives, '   num_detections: ', num_detections, '   num_gt: ', num_gt_boxes)
+    print('TP: ', true_positives, '   num_detections: ',
+          num_detections, '   num_gt: ', num_gt_boxes)
     precision = float(true_positives) / float(num_detections)
     recall = float(true_positives) / float(num_gt_boxes)
     return (precision, recall)
@@ -109,7 +110,8 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join(
             '', (img.strip()[:-4] + '.xml')))
-        c.execute('SELECT * FROM detections WHERE image_name=? AND confidence>=?', (img.strip(), conf_thresh))
+        c.execute('SELECT * FROM detections WHERE image_name=? AND confidence>=?',
+                  (img.strip(), conf_thresh))
         detections = c.fetchall()
         image = cv2.imread(img.strip())
         print(img.strip())
@@ -138,15 +140,18 @@ def main(data_path):
     precisions = []
     recalls = []
     for conf_thresh in conf_threshs:
-        (precision, recall) = get_precision_recall(conn, data_path, 0.5, conf_thresh)
+        (precision, recall) = get_precision_recall(
+            conn, data_path, 0.5, conf_thresh)
         precisions.append(precision)
         recalls.append(recall)
     print(precisions)
     print(recalls)
     # print(get_precision_recall(conn, data_path, 0.5))
-    # plt.plot(recalls, precisions)
-    # plt.grid(True)
-    # plt.show()
+    plt.plot(recalls, precisions)
+    plt.grid(True)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.savefig(os.path.join(data_path, 'results', 'prec_recall.png'))
     conn.close()
 
 
