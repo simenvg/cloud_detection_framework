@@ -141,7 +141,7 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
 def main(data_path):
     conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
     save_images_with_boxes(conn, data_path)
-    conf_threshs = [x * 0.1 for x in range(0, 10)]
+    conf_threshs = [x * 0.01 for x in range(0, 100)]
     precisions = []
     recalls = []
     for conf_thresh in conf_threshs:
