@@ -22,10 +22,10 @@ def main(data_path):
                                         'models', 'model', 'ssd_mobilenet_v1_coco_edited.config')
     home_path = data_path.replace('/data', '')
     subprocess.call(['python', home_path + '/models/research/object_detection/export_inference_graph.py',
-                     '--input_type image_tensor',
-                     '--pipeline_config_path ' + pipeline_config_path,
-                     '--trained_checkpoint_prefix ' + data_path + '/models/model/model-ckpt-' + highest_iteration,
-                     '--output_directory ' + data_path + '/trained_ssd_model'])
+                     '--input_type=image_tensor',
+                     '--pipeline_config_path=' + pipeline_config_path,
+                     '--trained_checkpoint_prefix=' + data_path + '/models/model/model.ckpt-' + highest_iteration,
+                     '--output_directory=' + data_path + '/trained_ssd_model'])
 
 
 if __name__ == '__main__':
