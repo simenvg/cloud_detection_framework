@@ -96,7 +96,7 @@ def set_test_datasets(data_path):
     return test_image_filepaths
 
 
-def main(data_path, detection_graph):
+def main(data_path):
     # MODEL_NAME = 'ssd_mobilenet_v1_coco_2017_11_17'
 
     # Path to frozen detection graph. This is the actual model that is used for the object detection.
