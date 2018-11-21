@@ -81,7 +81,7 @@ def set_test_datasets(data_path):
         print('No datasets in ~/data, run config_new_dataset.py on your dataset and move the dataset folder to ~/data')
     for i in range(0, len(datasets)):
         print('[', i, ']', datasets[i])
-    user_input = str(raw_input(
+    user_input = str(input(
         'Input the number for the datasets you wish to test on, separate numbers with space: ')).split()
     training_dataset_paths = []
     for dataset_index in user_input:
