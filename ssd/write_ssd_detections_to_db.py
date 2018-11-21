@@ -11,18 +11,6 @@ from distutils.version import StrictVersion
 from PIL import Image
 
 # This is needed since the notebook is stored in the object_detection folder.
-sys.path.append("..")
-from object_detection.utils import ops as utils_ops
-
-if StrictVersion(tf.__version__) < StrictVersion('1.9.0'):
-    raise ImportError(
-        'Please upgrade your TensorFlow installation to v1.9.* or later!')
-
-
-from utils import label_map_util
-
-from utils import visualization_utils as vis_util
-
 
 
 def load_image_into_numpy_array(image):
@@ -149,4 +137,15 @@ if __name__ == '__main__':
                         help='Set path to data folder, containg datasets')
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH[0]
+    home_path = DATA_PATH.replace('/data', '')
+    sys.path.append(os.path.join(home_path, 'models', 'research', 'object_detection'))
+    from object_detection.utils import ops as utils_ops
+
+    if StrictVersion(tf.__version__) < StrictVersion('1.9.0'):
+        raise ImportError(
+            'Please upgrade your TensorFlow installation to v1.9.* or later!')
+    from utils import label_map_util
+
+    from utils import visualization_utils as vis_util
+
     main(DATA_PATH)
