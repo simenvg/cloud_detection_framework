@@ -7,7 +7,7 @@ import subprocess
 
 def find_highest_model_file(data_path):
     highest_iteration = 0
-    for file in os.litdir(os.path.join(data_path, 'models', 'model')):
+    for file in os.listdir(os.path.join(data_path, 'models', 'model')):
         if file.endswith('.meta'):
             file_name_split = file.split('.')
             iteration = int(file_name_split[1][5:])
