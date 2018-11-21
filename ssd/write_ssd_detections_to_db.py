@@ -90,9 +90,9 @@ def run_inference_for_single_image(image, graph):
 def set_test_datasets(data_path):
     datasets = os.listdir(os.path.join(data_path, 'datasets'))
     if len(datasets) == 0:
-        print 'No datasets in ~/data, run config_new_dataset.py on your dataset and move the dataset folder to ~/data'
+        print('No datasets in ~/data, run config_new_dataset.py on your dataset and move the dataset folder to ~/data')
     for i in range(0, len(datasets)):
-        print '[', i, ']', datasets[i]
+        print('[', i, ']', datasets[i])
     user_input = str(raw_input(
         'Input the number for the datasets you wish to test on, separate numbers with space: ')).split()
     training_dataset_paths = []
