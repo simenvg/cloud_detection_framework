@@ -90,6 +90,10 @@ def set_test_datasets(data_path):
             if file.endswith('.jpg'):
                 test_image_filepaths.append(os.path.join(
                     training_dataset_path, 'test', file))
+    new_test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'w')
+    for test_image_filepath in test_image_filepaths:
+        new_test_file.write(test_image_filepath + '\n')
+    new_test_file.close()
     return test_image_filepaths
 
 
