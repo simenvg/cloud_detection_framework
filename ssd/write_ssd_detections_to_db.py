@@ -6,11 +6,10 @@ import os
 import sys
 import tensorflow as tf
 import argparse
+import sqlite3 as db
 
 from distutils.version import StrictVersion
 from PIL import Image
-
-# This is needed since the notebook is stored in the object_detection folder.
 
 
 def load_image_into_numpy_array(image):
@@ -73,8 +72,6 @@ def run_inference_for_single_image(image, graph):
     return output_dict
 
 
-# In[ ]:
-
 def set_test_datasets(data_path):
     datasets = os.listdir(os.path.join(data_path, 'datasets'))
     if len(datasets) == 0:
@@ -96,16 +93,26 @@ def set_test_datasets(data_path):
     return test_image_filepaths
 
 
+def initialize_database():
+    conn = db.connect(os.path.join(DATA_PATH, 'results', 'detections.db'))
+    c = conn.cursor()
+    c.execute('''CREATE TABLE detections
+                         (image_name text, xmin integer, xmax integer, ymin integer, ymax integer, class_name text, confidence real)''')
+    return conn
+
+
+def add_to_db(conn, image_name, xmin, xmax, ymin, ymax, class_name, confidence, width, height):
+    c = conn.cursor()
+    c.execute("INSERT INTO detections (image_name, xmin, xmax, ymin, ymax, class_name, confidence) VALUES (?, ?, ?, ?, ?, ?, ?)", (
+        image_name, xmin, xmax, ymin, ymax, class_name, confidence))
+
+
 def main(data_path):
-    # MODEL_NAME = 'ssd_mobilenet_v1_coco_2017_11_17'
-
+    conn = initialize_database()
     # Path to frozen detection graph. This is the actual model that is used for the object detection.
-    PATH_TO_FROZEN_GRAPH = os.path.join(data_path, 'trained_ssd_model', 'frozen_inference_graph.pb')
+    PATH_TO_FROZEN_GRAPH = os.path.join(
+        data_path, 'trained_ssd_model', 'frozen_inference_graph.pb')
 
-    # List of the strings that is used to add correct label for each box.
-    PATH_TO_LABELS = os.path.join(data_path, 'mscoco_label_map.pbtxt')
-
-    # Load a (frozen) Tensorflow model into memory.
     detection_graph = tf.Graph()
     with detection_graph.as_default():
         od_graph_def = tf.GraphDef()
@@ -113,22 +120,27 @@ def main(data_path):
             serialized_graph = fid.read()
             od_graph_def.ParseFromString(serialized_graph)
             tf.import_graph_def(od_graph_def, name='')
-    # ## Loading label map
-    # Label maps map indices to category names, so that when our convolution network predicts `5`, we know that this corresponds to `airplane`.  Here we use internal utility functions, but anything that returns a dictionary mapping integers to appropriate string labels would be fine
-    #category_index = label_map_util.create_category_index_from_labelmap(
-     #   PATH_TO_LABELS, use_display_name=True)
 
     test_image_paths = set_test_datasets(data_path)
     for image_path in test_image_paths:
         image = Image.open(image_path)
-        # the array based representation of the image will be used later in order to prepare the
-        # result image with boxes and labels on it.
+        width, height = image.size
         image_np = load_image_into_numpy_array(image)
-        # Expand dimensions since the model expects images to have shape: [1, None, None, 3]
-        # image_np_expanded = np.expand_dims(image_np, axis=0)
-        # Actual detection.
         output_dict = run_inference_for_single_image(image_np, detection_graph)
-        print(output_dict)
+        # print(output_dict)
+        detection_classes = output_dict['detection_classes']
+        detection_scores = output_dict['detection_scores']
+        detection_boxes = output_dict['detection_boxes']
+        for i in range(len(detection_boxes)):
+            xmin = int(detection_boxes[i][1] * width)
+            xmax = int(detection_boxes[i][3] * width)
+            ymin = int(detection_boxes[i][0] * height)
+            ymax = int(detection_boxes[i][2] * height)
+
+            add_to_db(conn, image_path, xmin, xmax, ymin,
+                      ymax, detection_classes[i], detection_scores[i])
+    conn.commit()
+    conn.close()
 
 
 if __name__ == '__main__':
@@ -138,14 +150,15 @@ if __name__ == '__main__':
     args = parser.parse_args()
     DATA_PATH = args.DATA_PATH[0]
     home_path = DATA_PATH.replace('/data', '')
-    sys.path.append(os.path.join(home_path, 'models', 'research', 'object_detection'))
+    sys.path.append(os.path.join(home_path, 'models',
+                                 'research', 'object_detection'))
     from object_detection.utils import ops as utils_ops
 
     if StrictVersion(tf.__version__) < StrictVersion('1.9.0'):
         raise ImportError(
             'Please upgrade your TensorFlow installation to v1.9.* or later!')
-    from utils import label_map_util
+    # from utils import label_map_util
 
-    from utils import visualization_utils as vis_util
+    # from utils import visualization_utils as vis_util
 
     main(DATA_PATH)
