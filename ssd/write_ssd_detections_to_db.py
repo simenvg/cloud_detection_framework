@@ -101,10 +101,10 @@ def initialize_database():
     return conn
 
 
-def add_to_db(conn, image_name, xmin, xmax, ymin, ymax, class_name, confidence, width, height):
+def add_to_db(conn, image_name, xmin, xmax, ymin, ymax, class_name, confidence):
     c = conn.cursor()
     c.execute("INSERT INTO detections (image_name, xmin, xmax, ymin, ymax, class_name, confidence) VALUES (?, ?, ?, ?, ?, ?, ?)", (
-        image_name, xmin, xmax, ymin, ymax, class_name, confidence))
+        image_name, xmin, xmax, ymin, ymax, str(class_name), float(confidence)))
 
 
 def main(data_path):
