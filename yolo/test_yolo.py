@@ -155,7 +155,7 @@ def main(data_path):
     print(recalls)
     prec_recall_dict['precisions'] = precisions
     prec_recall_dict['recalls'] = recalls
-    prec_recall_dict['name'] = 'SSD'
+    prec_recall_dict['name'] = 'Yolo'
     json_dict = pickle.dumps(prec_recall_dict)
     file = open(os.path.join(data_path, 'results', 'prec_recalls.txt'), 'w')
     file.write(json_dict)
