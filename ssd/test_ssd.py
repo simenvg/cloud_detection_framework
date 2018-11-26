@@ -145,7 +145,7 @@ def main(data_path):
         recalls.append(recall)
     print(precisions)
     print(recalls)
-    prec_recall_dict['precisions'] = precision
+    prec_recall_dict['precisions'] = precisions
     prec_recall_dict['recalls'] = recalls
     prec_recall_dict['name'] = 'SSD'
     json_dict = pickle.dumps(prec_recall_dict)
