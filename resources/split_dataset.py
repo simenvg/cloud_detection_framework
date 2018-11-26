@@ -13,7 +13,7 @@ def change_folder(current_path, new_path, filename):
 def split_to_train_and_test_folders(path):
     for filename in os.listdir(path):
         if filename.endswith(".jpg"):
-            if random.random() >= 0.50:
+            if random.random() >= 0.25:
                 change_folder(path, os.path.join(path, 'train'), filename)
                 change_folder(path, os.path.join(path, 'train'), filename[:-4] + '.xml')
             else:

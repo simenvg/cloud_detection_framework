@@ -12,6 +12,7 @@ if os.environ.get('DISPLAY', '') == '':
     print('no display found. Using non-interactive Agg backend')
     mpl.use('Agg')
 import matplotlib.pyplot as plt
+import pickle
 
 
 RED = (0, 0, 255)
@@ -136,6 +137,7 @@ def main(data_path):
     conf_threshs = [x * 0.01 for x in range(0, 100)]
     precisions = []
     recalls = []
+    prec_recall_dict = {}
     for conf_thresh in conf_threshs:
         (precision, recall) = get_precision_recall(
             conn, data_path, 0.5, conf_thresh)
@@ -143,6 +145,13 @@ def main(data_path):
         recalls.append(recall)
     print(precisions)
     print(recalls)
+    prec_recall_dict['precisions'] = precision
+    prec_recall_dict['recalls'] = recalls
+    prec_recall_dict['name'] = 'SSD'
+    json_dict = pickle.dumps(prec_recall_dict)
+    file = open(os.path.join(data_path, 'results', 'prec_recalls.txt', 'w'))
+    file.write(json_dict)
+    file.close()
     # print(get_precision_recall(conn, data_path, 0.5))
     plt.plot(recalls, precisions)
     plt.grid(True)
