@@ -131,13 +131,28 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
         i += 1
 
 
+def write_prec_recall_to_file(data_path, precisions, recalls, name='SSD'):
+    file = open(os.path.join(data_path, 'results', 'prec_recalls.txt'), 'w')
+    file.write(name + '\n')
+    for precision in precisions:
+        file.write(precision)
+        if precision != precisions[-1]:
+            file.write(' ')
+    file.write('\n')
+    for recall in recalls:
+        file.write(precision)
+        if precision != precisions[-1]:
+            file.write(' ')
+    file.write('\n')
+    file.close()
+
+
 def main(data_path):
     conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
     save_images_with_boxes(conn, data_path)
     conf_threshs = [x * 0.01 for x in range(0, 100)]
     precisions = []
     recalls = []
-    prec_recall_dict = {}
     for conf_thresh in conf_threshs:
         (precision, recall) = get_precision_recall(
             conn, data_path, 0.5, conf_thresh)
@@ -145,12 +160,7 @@ def main(data_path):
         recalls.append(recall)
     print(precisions)
     print(recalls)
-    prec_recall_dict['precisions'] = precisions
-    prec_recall_dict['recalls'] = recalls
-    prec_recall_dict['name'] = 'SSD'
-    file = open(os.path.join(data_path, 'results', 'prec_recalls.txt'), 'wb')
-    pickle.dump(prec_recall_dict, file)
-    file.close()
+    write_prec_recall_to_file(data_path, precisions, recalls)
     # print(get_precision_recall(conn, data_path, 0.5))
     plt.plot(recalls, precisions)
     plt.grid(True)

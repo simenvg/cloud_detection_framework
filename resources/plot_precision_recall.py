@@ -14,11 +14,11 @@ file_names = os.listdir(DATA_PATH)
 
 def load_pickle(pickle_file):
     try:
-        with open(pickle_file, 'r') as f:
-            pickle_data = pickle.loads(f.read())
+        with open(pickle_file, 'rb') as f:
+            pickle_data = pickle.load(f)
     except UnicodeDecodeError as e:
         with open(pickle_file, 'rb') as f:
-            pickle_data = pickle.loads(f.read(), encoding='latin1')
+            pickle_data = pickle.load(f, encoding='latin1')
     except Exception as e:
         print('Unable to load data ', pickle_file, ':', e)
         raise
