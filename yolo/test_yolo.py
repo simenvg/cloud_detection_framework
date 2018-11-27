@@ -143,13 +143,13 @@ def write_prec_recall_to_file(data_path, precisions, recalls, name='Yolo'):
     file = open(os.path.join(data_path, 'results', 'prec_recalls.txt'), 'w')
     file.write(name + '\n')
     for precision in precisions:
-        file.write(precision)
+        file.write(str(precision))
         if precision != precisions[-1]:
             file.write(' ')
     file.write('\n')
     for recall in recalls:
-        file.write(precision)
-        if precision != precisions[-1]:
+        file.write(str(recall))
+        if recall != recalls[-1]:
             file.write(' ')
     file.write('\n')
     file.close()
