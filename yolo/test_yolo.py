@@ -112,8 +112,8 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
     test_file = open(os.path.join(data_path, 'model', 'test.txt'), 'r')
     image_filepaths = test_file.readlines()
     test_file.close()
-    i = 0
     for img in image_filepaths:
+        img_name = img.strip().split('/')[-1]
         gt_boxes = get_GT_boxes(os.path.join(
             '', (img.strip()[:-4] + '.xml')))
         c.execute('SELECT * FROM detections WHERE image_name=? AND confidence>=?',
@@ -135,8 +135,7 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
             cv2.rectangle(image, (int(box[1]), int(box[3])),
                           (int(box[2]), int(box[4])), color, 2)
         cv2.imwrite(os.path.join(data_path, 'results',
-                                 'image_' + str(i) + '.jpg'), image)
-        i += 1
+                                 img_name), image)
 
 
 def write_prec_recall_to_file(data_path, precisions, recalls, name='Yolo'):
@@ -155,9 +154,7 @@ def write_prec_recall_to_file(data_path, precisions, recalls, name='Yolo'):
     file.close()
 
 
-def main(data_path):
-    conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
-    save_images_with_boxes(conn, data_path)
+def calculate_prec_recall(data_path, conn):
     conf_threshs = [x * 0.01 for x in range(0, 100)]
     precisions = []
     recalls = []
@@ -175,6 +172,12 @@ def main(data_path):
     plt.xlabel('Recall')
     plt.ylabel('Precision')
     plt.savefig(os.path.join(data_path, 'results', 'prec_recall.png'))
+
+
+def main(data_path):
+    conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
+    save_images_with_boxes(conn, data_path)
+    calculate_prec_recall(data_path, conn)
     conn.close()
 
 

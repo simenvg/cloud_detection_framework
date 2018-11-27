@@ -1,4 +1,3 @@
-import pickle
 import matplotlib.pyplot as plt
 import argparse
 import os
@@ -12,22 +11,19 @@ DATA_PATH = args.DATA_PATH[0]
 file_names = os.listdir(DATA_PATH)
 
 
-def load_pickle(pickle_file):
-    try:
-        with open(pickle_file, 'rb') as f:
-            pickle_data = pickle.load(f)
-    except UnicodeDecodeError as e:
-        with open(pickle_file, 'rb') as f:
-            pickle_data = pickle.load(f, encoding='latin1')
-    except Exception as e:
-        print('Unable to load data ', pickle_file, ':', e)
-        raise
-    return pickle_data
+def load_file(file_path):
+    file = open(file_path, 'r')
+    prec_recall_dict = {}
+    prec_recall_dict['name'] = file.readline()
+    prec_recall_dict['precisions'] = file.readline().split(' ')
+    prec_recall_dict['recalls'] = file.readline().split(' ')
+    file.close()
+    return prec_recall_dict
 
 
 for file_name in file_names:
     file_path = os.path.join(DATA_PATH, file_name)
-    prec_recall_dict = load_pickle(file_path)
+    prec_recall_dict = load_file(file_path)
     name = prec_recall_dict['name']
     precisions = prec_recall_dict['precisions']
     recalls = prec_recall_dict['recalls']
@@ -35,6 +31,7 @@ for file_name in file_names:
     plt.grid(True)
     plt.xlabel('Recall')
     plt.ylabel('Precision')
-    plt.legend()
+    plt.legend(loc="lower left")
+    plt.title('Precision/Recall curve')
 
 plt.show()
