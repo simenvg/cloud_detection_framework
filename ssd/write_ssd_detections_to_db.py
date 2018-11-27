@@ -71,6 +71,7 @@ def run_inference_for_multiple_images(image_paths, graph):
                 output_dict['detection_classes'] = output_dict[
                     'detection_classes'][0].astype(np.uint8)
                 output_dict['detection_boxes'] = output_dict['detection_boxes'][0]
+                print(len(output_dict['detection_boxes']))
                 output_dict['detection_scores'] = output_dict['detection_scores'][0]
                 if 'detection_masks' in output_dict:
                     output_dict['detection_masks'] = output_dict['detection_masks'][0]
@@ -141,7 +142,7 @@ def main(data_path):
         detection_classes = output_dict['detection_classes']
         detection_scores = output_dict['detection_scores']
         detection_boxes = output_dict['detection_boxes']
-        print(len(detection_scores))
+        # print(len(detection_scores))
         width = output_dict['width']
         height = output_dict['height']
         for i in range(len(detection_boxes)):
