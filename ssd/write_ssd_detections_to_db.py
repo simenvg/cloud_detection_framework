@@ -141,6 +141,7 @@ def main(data_path):
         detection_classes = output_dict['detection_classes']
         detection_scores = output_dict['detection_scores']
         detection_boxes = output_dict['detection_boxes']
+        print(len(detection_scores))
         width = output_dict['width']
         height = output_dict['height']
         for i in range(len(detection_boxes)):
