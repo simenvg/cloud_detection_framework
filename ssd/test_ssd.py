@@ -148,9 +148,8 @@ def main(data_path):
     prec_recall_dict['precisions'] = precisions
     prec_recall_dict['recalls'] = recalls
     prec_recall_dict['name'] = 'SSD'
-    json_dict = pickle.dump(prec_recall_dict)
     file = open(os.path.join(data_path, 'results', 'prec_recalls.txt'), 'wb')
-    file.write(json_dict)
+    pickle.dump(prec_recall_dict, file)
     file.close()
     # print(get_precision_recall(conn, data_path, 0.5))
     plt.plot(recalls, precisions)
