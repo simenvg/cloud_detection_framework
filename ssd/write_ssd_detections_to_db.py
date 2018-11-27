@@ -18,11 +18,14 @@ def load_image_into_numpy_array(image):
         (im_height, im_width, 3)).astype(np.uint8)
 
 
-def run_inference_for_multiple_images(images, graph):
+def run_inference_for_multiple_images(image_paths, graph):
     with graph.as_default():
         with tf.Session() as sess:
             output_dicts = []
-            for image in images:
+            for image_path in image_paths:
+                image = Image.open(image_path)
+                image_np = load_image_into_numpy_array(image)
+
                 # Get handles to input and output tensors
                 ops = tf.get_default_graph().get_operations()
                 all_tensor_names = {
@@ -50,7 +53,7 @@ def run_inference_for_multiple_images(images, graph):
                     detection_masks = tf.slice(detection_masks, [0, 0, 0], [
                                                real_num_detection, -1, -1])
                     detection_masks_reframed = utils_ops.reframe_box_masks_to_image_masks(
-                        detection_masks, detection_boxes, image.shape[0], image.shape[1])
+                        detection_masks, detection_boxes, image_np.shape[0], image_np.shape[1])
                     detection_masks_reframed = tf.cast(
                         tf.greater(detection_masks_reframed, 0.5), tf.uint8)
                     # Follow the convention by adding back the batch dimension
@@ -60,7 +63,7 @@ def run_inference_for_multiple_images(images, graph):
 
                 # Run inference
                 output_dict = sess.run(tensor_dict,
-                                       feed_dict={image_tensor: np.expand_dims(image, 0)})
+                                       feed_dict={image_tensor: np.expand_dims(image_np, 0)})
 
                 # all outputs are float32 numpy arrays, so convert types as appropriate
                 output_dict['num_detections'] = int(
@@ -71,7 +74,10 @@ def run_inference_for_multiple_images(images, graph):
                 output_dict['detection_scores'] = output_dict['detection_scores'][0]
                 if 'detection_masks' in output_dict:
                     output_dict['detection_masks'] = output_dict['detection_masks'][0]
-                output_dict['name'] = image
+                width, height = image.size
+                output_dict['width'] = width
+                output_dict['height'] = height
+                output_dict['name'] = image_path
                 output_dicts.append(output_dict)
     return output_dicts
 
@@ -132,13 +138,11 @@ def main(data_path):
     test_image_paths = set_test_datasets(data_path)
     output_dicts = run_inference_for_multiple_images(test_image_paths, detection_graph)
     for output_dict in output_dicts:
-        image = Image.open(output_dict['name'])
-        width, height = image.size
-        # image_np = load_image_into_numpy_array(image)
-        # print(output_dict)
         detection_classes = output_dict['detection_classes']
         detection_scores = output_dict['detection_scores']
         detection_boxes = output_dict['detection_boxes']
+        width = output_dict['width']
+        height = output_dict['height']
         for i in range(len(detection_boxes)):
             xmin = int(detection_boxes[i][1] * width)
             xmax = int(detection_boxes[i][3] * width)
