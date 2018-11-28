@@ -164,7 +164,7 @@ def main(data_path):
             ymax = int(detection_boxes[i][2] * height)
 
             add_to_db(conn, output_dict['name'], xmin, xmax, ymin,
-                      ymax, classes_dict[detection_classes[i]], detection_scores[i])
+                      ymax, classes_dict[str(detection_classes[i])], detection_scores[i])
     conn.commit()
     conn.close()
 
