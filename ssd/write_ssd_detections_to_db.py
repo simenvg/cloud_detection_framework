@@ -25,6 +25,7 @@ def get_classes_dict(data_path):
     classes_dict = {}
     for i in range(len(lines)):
         classes_dict[str(i + 1)] = lines[i].strip()
+    print(classes_dict)
     return classes_dict
 
 
