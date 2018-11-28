@@ -18,6 +18,16 @@ def load_image_into_numpy_array(image):
         (im_height, im_width, 3)).astype(np.uint8)
 
 
+def get_classes_dict(data_path):
+    file = open(os.path.join(data_path, 'tmp', 'classes.txt'), 'r')
+    lines = file.readlines()
+    file.close()
+    classes_dict = {}
+    for i in range(len(lines)):
+        classes_dict[str(i + 1)] = lines[i].strip()
+    return classes_dict
+
+
 def run_inference_for_multiple_images(image_paths, graph):
     with graph.as_default():
         with tf.Session() as sess:
@@ -123,6 +133,7 @@ def add_to_db(conn, image_name, xmin, xmax, ymin, ymax, class_name, confidence):
 
 
 def main(data_path):
+    classes_dict = get_classes_dict(data_path)
     conn = initialize_database()
     # Path to frozen detection graph. This is the actual model that is used for the object detection.
     PATH_TO_FROZEN_GRAPH = os.path.join(
@@ -152,7 +163,7 @@ def main(data_path):
             ymax = int(detection_boxes[i][2] * height)
 
             add_to_db(conn, output_dict['name'], xmin, xmax, ymin,
-                      ymax, detection_classes[i], detection_scores[i])
+                      ymax, classes_dict[detection_classes[i]], detection_scores[i])
     conn.commit()
     conn.close()
 
