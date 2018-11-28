@@ -103,8 +103,12 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
         num_gt_boxes += len(gt_boxes)
     print('TP: ', true_positives, '   num_detections: ',
           num_detections, '   num_gt: ', num_gt_boxes)
-    precision = float(true_positives) / float(num_detections)
-    recall = float(true_positives) / float(num_gt_boxes)
+    precision = 0
+    if num_detections > 0:
+        precision = float(true_positives) / float(num_detections)
+    recall = 0
+    if num_gt_boxes > 0:
+        recall = float(true_positives) / float(num_gt_boxes)
     return (precision, recall)
 
 
