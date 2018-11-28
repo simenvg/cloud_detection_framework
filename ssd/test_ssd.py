@@ -39,8 +39,9 @@ def get_GT_boxes(label_filepath):
     boxes = []
     for obj in root.iter('object'):
         xmlbox = obj.find('bndbox')
-        boxes.append(Box(obj.find('name').text, float(xmlbox.find('xmin').text), float(
-            xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text)))
+        if obj.find('name').text == 'boat':
+            boxes.append(Box(obj.find('name').text, float(xmlbox.find('xmin').text), float(
+                xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text)))
     return boxes
 
 
@@ -78,8 +79,8 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     test_file.close()
     for img in image_filepaths:
         gt_boxes = get_GT_boxes(os.path.join((img.strip()[:-4] + '.xml')))
-        c.execute('SELECT * FROM detections WHERE image_name=? and confidence>=?',
-                  (img.strip(), confidence_thresh))
+        c.execute('SELECT * FROM detections WHERE image_name=? and confidence>=? and class_name=?',
+                  (img.strip(), confidence_thresh, 'boat'))
         detections = c.fetchall()
         num_detections += len(detections)
         for gt_box in gt_boxes:
