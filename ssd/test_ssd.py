@@ -123,14 +123,14 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
             exit()
         for box in gt_boxes:
             cv2.rectangle(image, (int(box.x_min), int(box.y_max)),
-                          (int(box.x_max), int(box.y_min)), GREEN, 2)
+                          (int(box.x_max), int(box.y_min)), GREEN, 4)
         for box in detections:
             if (box[5] == 'building'):
                 color = BLUE
             else:
                 color = RED
             cv2.rectangle(image, (int(box[1]), int(box[3])),
-                          (int(box[2]), int(box[4])), color, 2)
+                          (int(box[2]), int(box[4])), color, 4)
         cv2.imwrite(os.path.join(data_path, 'results',
                                  'image_' + str(i) + '.jpg'), image)
         i += 1
