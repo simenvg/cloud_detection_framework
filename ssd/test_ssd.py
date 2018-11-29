@@ -111,6 +111,7 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
     test_file.close()
     i = 0
     for img in image_filepaths:
+        img_name = img.strip().split('/')[-1]
         gt_boxes = get_GT_boxes(os.path.join(
             '', (img.strip()[:-4] + '.xml')))
         c.execute('SELECT * FROM detections WHERE image_name=? AND confidence>=?',
@@ -132,7 +133,7 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
             cv2.rectangle(image, (int(box[1]), int(box[3])),
                           (int(box[2]), int(box[4])), color, 6)
         cv2.imwrite(os.path.join(data_path, 'results',
-                                 'image_' + str(i) + '.jpg'), image)
+                                 img_name), image)
         i += 1
 
 
