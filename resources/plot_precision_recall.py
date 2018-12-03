@@ -22,15 +22,10 @@ def load_file(file_path):
 def get_files(results_path):
     prec_recall_paths = []
     trained_on = ['trained_on_trf_bc_bf',
-                  'trained_on_trf_bc_bf_bb_build', 'trained_on_trf_bc_bf_bbnb']
+                  'trained_on_trf_bc_bf_bbnb', 'trained_on_trf_bc_bf_bb_build']
     tested_on = ['tested_on_b_and_b', 'tested_on_trf',
                  'tested_on_bc_bf', 'tested_on_bc_bf_trf']
     ssd_yolo = ['results-yolo', 'results-ssd']
-    # for train in trained_on:
-    #     for test in tested_on:
-    #         for det in ssd_yolo:
-    #             prec_recall_paths.append(os.path.join(
-    #                 results_path, train, test, det))
 
     while True:
         print('Trained on dataset:')
