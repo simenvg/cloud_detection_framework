@@ -69,7 +69,7 @@ def valid_detection(detected_box, gt_box, iou_thresh=0.5):
     return get_iou(detected_box, gt_box) >= iou_thresh
 
 
-def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
+def get_detections_stats(conn, data_path, iou_thresh, confidence_thresh=0.25):
     true_positives = 0
     num_detections = 0
     num_gt_boxes = 0
@@ -95,6 +95,11 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
         num_gt_boxes += len(gt_boxes)
     print('TP: ', true_positives, '   num_detections: ',
           num_detections, '   num_gt: ', num_gt_boxes)
+    return [true_positives, num_detections, num_gt_boxes]
+
+
+def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
+    [true_positives, num_detections, num_gt_boxes] = get_detections_stats(conn, data_path, iou_thresh, confidence_thresh)
     precision = 0
     if num_detections > 0:
         precision = float(true_positives) / float(num_detections)
@@ -102,6 +107,20 @@ def get_precision_recall(conn, data_path, iou_thresh, confidence_thresh=0.25):
     if num_gt_boxes > 0:
         recall = float(true_positives) / float(num_gt_boxes)
     return (precision, recall)
+
+
+def get_confusion_matrix(conn, data_path, iou_thresh, confidence_thresh=0.25):
+    [true_positives, num_detections, num_gt_boxes] = get_detections_stats(conn, data_path, iou_thresh, confidence_thresh)
+    false_positives = num_detections - true_positives
+    false_negatives = num_gt_boxes - true_positives
+    file = open(os.path.join(data_path, 'results', 'confusion_matrix.txt'), 'w')
+    file.write('true_positives = ' + str(true_positives))
+    file.write('false_positives = ' + str(false_positives))
+    file.write('false_negatives = ' + str(false_negatives))
+    file.write('num_detections = ' + str(num_detections))
+    file.write('num_gt_boxes = ' + str(num_gt_boxes))
+    file.close()
+    return [true_positives, false_positives, false_negatives]
 
 
 def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
