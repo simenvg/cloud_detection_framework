@@ -164,7 +164,7 @@ def write_prec_recall_to_file(data_path, precisions, recalls, name='SSD'):
         if i != len(precisions):
             file.write(' ')
     file.write('\n')
-    for i in range in len(recalls):
+    for i in range len(recalls):
         file.write(str(recalls[i]))
         if i != len(recalls):
             file.write(' ')
