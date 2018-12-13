@@ -202,6 +202,7 @@ def main(data_path):
     conn = db.connect(os.path.join(data_path, 'results', 'detections.db'))
     save_images_with_boxes(conn, data_path)
     calculate_prec_recall(data_path, conn)
+    get_confusion_matrix(conn, data_path, 0.5)
     conn.close()
 
 

@@ -186,6 +186,7 @@ def main(data_path):
     print(precisions)
     print(recalls)
     write_prec_recall_to_file(data_path, precisions, recalls)
+    get_confusion_matrix(conn, data_path, 0.5)
     # print(get_precision_recall(conn, data_path, 0.5))
     plt.plot(recalls, precisions)
     plt.grid(True)
