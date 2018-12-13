@@ -114,11 +114,11 @@ def get_confusion_matrix(conn, data_path, iou_thresh, confidence_thresh=0.25):
     false_positives = num_detections - true_positives
     false_negatives = num_gt_boxes - true_positives
     file = open(os.path.join(data_path, 'results', 'confusion_matrix.txt'), 'w')
-    file.write('true_positives = ' + str(true_positives))
-    file.write('false_positives = ' + str(false_positives))
-    file.write('false_negatives = ' + str(false_negatives))
-    file.write('num_detections = ' + str(num_detections))
-    file.write('num_gt_boxes = ' + str(num_gt_boxes))
+    file.write('true_positives = ' + str(true_positives) + '\n')
+    file.write('false_positives = ' + str(false_positives) + '\n')
+    file.write('false_negatives = ' + str(false_negatives) + '\n')
+    file.write('num_detections = ' + str(num_detections) + '\n')
+    file.write('num_gt_boxes = ' + str(num_gt_boxes) + '\n')
     file.close()
     return [true_positives, false_positives, false_negatives]
 
@@ -164,7 +164,7 @@ def write_prec_recall_to_file(data_path, precisions, recalls, name='SSD'):
         if i != len(precisions):
             file.write(' ')
     file.write('\n')
-    for i in range len(recalls):
+    for i in range(len(recalls)):
         file.write(str(recalls[i]))
         if i != len(recalls):
             file.write(' ')
