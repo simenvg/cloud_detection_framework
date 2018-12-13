@@ -74,13 +74,20 @@ def plot_prec_recall(prec_recall_file_paths, output_path, i):
         precisions = prec_recall_dict['precisions']
         recalls = prec_recall_dict['recalls']
         plt.figure(i)
-        plt.plot(recalls, precisions, label=name)
+        plt.plot(recalls, precisions, label=name, linewidth=3)
         plt.grid(True)
         plt.xlabel('Recall')
         plt.ylabel('Precision')
         plt.ylim(top=1.03)
         plt.ylim(bottom=0)
+        plt.xlim(right=1)
+        plt.xlim(left=0)
+        plt.rcParams.update({'font.size': 20})
+        plt.rcParams["figure.dpi"] = 1000
         plt.legend(loc="lower left")
+        # leg_lines = leg.get_lines()
+        # plt.setp(leg_lines, linewidth=3)
+        plt.tight_layout()
         plt.title('Precision/Recall curve')
 
     plt.show()
