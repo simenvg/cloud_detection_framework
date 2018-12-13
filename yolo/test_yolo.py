@@ -146,14 +146,14 @@ def save_images_with_boxes(conn, data_path, conf_thresh=0.25):
 def write_prec_recall_to_file(data_path, precisions, recalls, name='Yolo'):
     file = open(os.path.join(data_path, 'results', 'prec_recalls.txt'), 'w')
     file.write(name + '\n')
-    for precision in precisions:
-        file.write(str(precision))
-        if precision != precisions[-1]:
+    for i in range(len(precisions)):
+        file.write(str(precisions[i]))
+        if i != len(precisions):
             file.write(' ')
     file.write('\n')
-    for recall in recalls:
-        file.write(str(recall))
-        if recall != recalls[-1]:
+    for i in range in len(recalls):
+        file.write(str(recalls[i]))
+        if i != len(recalls):
             file.write(' ')
     file.write('\n')
     file.close()
